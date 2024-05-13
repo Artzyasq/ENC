@@ -181,7 +181,7 @@ end
 function WebhookPertama()
     local PrimWebhook = Webhook.new(WebhookUrl)
     PrimWebhook.embed1.use = true
-    PrimWebhook.username = "CEMA SCRIPT UPDATE"
+    PrimWebhook.username = "LUKMAN SCRIPT UPDATE"
     PrimWebhook.avatar_url = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
     PrimWebhook.embed1.title = "INFORMATION"
     PrimWebhook.embed1.thumbnail = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
@@ -198,7 +198,7 @@ function WebhookPertama()
 
     PrimWebhook.embed1:addField("<:world:1188855761368006736> List World (".. AmbilNomerFarmIni()..")", AmbilFarmListIni(), false)
 
-    PrimWebhook.embed1.footer.text = "Lucifer Uptime - " .. AmbilUptime() .."\nCema Script [Dirt Farm 1.2]"
+    PrimWebhook.embed1.footer.text = "Lucifer Uptime - " .. AmbilUptime() .."\nLukman Script [Dirt Farm 1.2]"
     PrimWebhook.embed1.footer.icon_url = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
 
     if WebhookLive:upper() == "TRUE" then
@@ -211,7 +211,7 @@ end
 function WebhookKetiga(notify)
     local ThiWebhook = Webhook.new(SecWebhookUrl)
     ThiWebhook.embed1.use = true
-    ThiWebhook.username = "CEMA SCRIPT UPDATE"
+    ThiWebhook.username = "LUKMAN SCRIPT UPDATE"
     ThiWebhook.avatar_url = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
     ThiWebhook.embed1.color = 4120036
     ThiWebhook.embed1.description = "**<:farmerbot:1227256310878179338> ".. bot.name:upper() .." ".. notify .."**"
@@ -222,7 +222,7 @@ function WebhookKeempat(notify)
     local FouWebhook = Webhook.new(WebhookUrl)
     FouWebhook.content = "@everyone"
     FouWebhook.embed1.use = true
-    FouWebhook.username = "CEMA SCRIPT UPDATE"
+    FouWebhook.username = "LUKMAN SCRIPT UPDATE"
     FouWebhook.avatar_url = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
     FouWebhook.embed1.color = 4120036
     FouWebhook.embed1.description = "**<:farmerbot:1227256310878179338> ".. bot.name:upper() .." ".. notify .."**"
@@ -1355,7 +1355,7 @@ JalanIni()
 else
     print("[Lukman Script] [Status : Username Not Register!!!]")
     sleep(math.random(50,100))
-    print("[Lukman Script] [Contact Cema Store For Register]")
+    print("[Lukman Script] [Contact Lukman Store For Register]")
     messageBox = MessageBox.new()
     messageBox.title = "Lukman Store"
     messageBox.description = "Silahkan Register Hubungin Admin"
