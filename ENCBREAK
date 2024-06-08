@@ -2,6 +2,7 @@ Mode = 2 -- 1 public 2 sl
 UsePlat = true
 Webhook = "https://discord.com/api/webhooks/"
 IDMessage = "1229134363023900744"
+
 bot = getBot()
 
 math.randomseed(os.time())
@@ -238,22 +239,6 @@ function drop(values,Create)
     sleep(1500)
 end
 
-function isLicenseValid()
-    local client = HttpClient.new()
-    client.url = "https://raw.githubusercontent.com/Artzyasq/LICENSE-1/main/LISENSI"
-    local licenses = load(client:request().body)()
-    for key, value in pairs(licenses) do
-        if value == getUsername() then
-            return true
-        end
-    end
-    return false
-end
-
-print("[Cema Script] [Status : Success Login]")
-if isLicenseValid() then
-    print("[Cema Script] [Status : Success Login]")
-
 warp(WorldTake,IDWorldTake)
 take(IDDoor,Create*DoorCount)
 bot:moveTo(-1,0)
@@ -398,5 +383,25 @@ for i =  1 ,Create do
     pep(Webhook,IDMessage)
 
 end
-    print("[Cema Script] [Status : Username Not Register!!!]")
+function isLicenseValid()
+    local client = HttpClient.new()
+    client.url = "https://raw.githubusercontent.com/Artzyasq/LICENSE-1/main/LISENSI"
+    local licenses = load(client:request().body)()
+    for key, value in pairs(licenses) do
+        if value == getUsername() then
+            return true
+        end
+    end
+    return false
+end
+
+print("[Lukman Script] [Username: " ..getUsername().."]")
+if isLicenseValid() then
+    print("[Lukman Script] [Status: Success Login]")
+    sleep(math.random(50,100))
+    print("[Lukman Script] [Running Script Rotation By Lukman]")
+
+    print("[Lukman Script] [Status : Username Not Register!!!]")
+    sleep(math.random(50,100))
+    print("[Lukman Script] [Contact Cema Store For Register]")
 end
