@@ -348,6 +348,8 @@ function AutoClotches()
     sleep(100)
     jumlahClothes = #currentClothes
     if jumlahClothes < 5 then
+        print(bot.name:upper().." buy and wearing cloth! ")
+        sleep(100)
         bot:sendPacket(2,"action|buy\nitem|rare_clothes")
         sleep(100)
         for _,num in pairs(bot:getInventory():getItems()) do
@@ -879,8 +881,6 @@ end
 function buyPack(world)
     bot.auto_collect = false
     bot.collect_interval = 9999999
-    print("[Lukman Script] ["..bot.name:upper().." Buying Pack "..BuyPack.."]")
-    sleep(math.random(100,200))
     while bot:getInventory().slotcount < 36 do
         bot:buy("upgrade_backpack")
         sleep(200)
@@ -888,6 +888,8 @@ function buyPack(world)
     while bot.gem_count > BuyPackPrice do
         if bot.gem_count > BuyPackPrice and bot:getInventory():findItem(BuyNamePack[1]) < 200 then
             bot:buy(BuyPack)
+            print("[Lukman Script] ["..bot.name:upper().." Buying Pack "..BuyPack.."]")
+            sleep(math.random(100,200))
             profit = profit + 1
             sleep(1000)
             if bot:getInventory():findItem(BuyNamePack[1]) <= 0 then
@@ -965,7 +967,7 @@ function isPlantable(tile)
 end
 
 function plant(world)
-    print("[Cema Store] "..bot.name:upper().." Planting Tree")
+    print("[Lukman Store] "..bot.name:upper().." Planting Tree")
     sleep(math.random(100,200))
 
     for _,tile in pairs(bot:getWorld():getTiles()) do
@@ -1296,6 +1298,8 @@ function harvest(world)
         if TakeFlooting then
             for _,obj in pairs(bot:getWorld():getObjects()) do
                 if obj.id == number_block then
+                    print("[Lukman Store] ["bot.name:upper().." Detect Float Block At Farm]")
+                    sleep(100)
                     bot:findPath(round(obj.x / 32),math.floor(obj.y / 32))
                     sleep(100)
                     bot:collect(3)
@@ -1313,7 +1317,7 @@ function harvest(world)
         end
     end
     if AutoRefill then
-        print("[Cema Store] ["..bot.name:upper().." Refill Tree "..bot:getWorld().name:upper().."]")
+        print("[Lukman Store] ["..bot.name:upper().." Refill Tree "..bot:getWorld().name:upper().."]")
         sleep(math.random(100,200))
         for _,tile in pairs(bot:getWorld():getTiles()) do
             if bot:getInventory():findItem(number_seed) == 0 then
