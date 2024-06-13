@@ -777,7 +777,7 @@ function PNB()
         bot.ignore_gems = NoTakeGem()
 
         if BreakOption:upper() == "UP" then
-            while findItem(blockID) > 0 and findItem(SeedId) >= 190 and bot:isInWorld(pnbWorld:upper()) and getTile(bot.x, bot.y).fg ~= 6 do
+            while findItem(blockID) > 0 and findItem(SeedId) <= 190 and bot:isInWorld(pnbWorld:upper()) and getTile(bot.x, bot.y).fg ~= 6 do
 
                 for _,i in pairs(BreakRange) do
                     if getTile(PosX + i, PosY - 2).fg == 0 and getTile(PosX + i, PosY - 2).bg == 0 then
@@ -800,7 +800,7 @@ function PNB()
                 end
             end
         elseif BreakOption:upper() == "DOWN" then
-            while findItem(blockID) > 0 and findItem(SeedId) >= 190 and bot:isInWorld(pnbWorld:upper()) and getTile(bot.x, bot.y).fg ~= 6 do
+            while findItem(blockID) > 0 and findItem(SeedId) <= 190 and bot:isInWorld(pnbWorld:upper()) and getTile(bot.x, bot.y).fg ~= 6 do
 
                 for _,i in pairs(BreakRange) do
                     if getTile(PosX + i, PosY + 2).fg == 0 and getTile(PosX + i, PosY + 2).bg == 0 then
@@ -899,7 +899,7 @@ function PNBTutorial()
             bot.object_collect_delay = 150
             bot.ignore_gems = NoTakeGem()
 
-            while findItem(blockID) > 0 and findItem(SeedId) >= 190 and bot:isInWorld(worldTutor:upper()) and getTile(bot.x, bot.y).fg ~= 6 do
+            while findItem(blockID) > 0 and findItem(SeedId) <= 190 and bot:isInWorld(worldTutor:upper()) and getTile(bot.x, bot.y).fg ~= 6 do
 
                 for i,player in pairs(getPlayers()) do
                     if player.netid ~= getLocal().netid and player.name:upper() ~= whiteListOwner:upper() then
