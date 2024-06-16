@@ -1116,7 +1116,7 @@ function harvest(world)
     if IgnoreGems then
         bot.ignore_gems = true
     end
-    print("[Lukman Script] ["..bot.name:upper().." Harvesting Tree "..getInfo(number_block).name.."]")
+    print("[Lukman Script] ["..bot.name:upper().." Harvesting "..getInfo(number_block).name.."]")
     sleep(math.random(100,200))
     if bot.level < HarvestOnlyLvl and HarvestOnly then
         for _,tile in pairs(bot:getWorld():getTiles()) do
