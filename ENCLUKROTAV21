@@ -1298,7 +1298,7 @@ function harvest(world)
         if TakeFlooting then
             for _,obj in pairs(bot:getWorld():getObjects()) do
                 if obj.id == number_block then
-                    print("[Lukman Store] ["bot.name:upper().." Detect Float Block At Farm]")
+                    print("[Lukman Store] ["..bot.name:upper().." Detect Float Block At Farm]")
                     sleep(100)
                     bot:findPath(round(obj.x / 32),math.floor(obj.y / 32))
                     sleep(100)
