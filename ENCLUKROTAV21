@@ -1397,7 +1397,7 @@ function isLicenseValid()
     return false
 end
 
-print("[Lukman Script] [Username: " ..getUsername().."]")
+print("[Lukman Script] [Username: [" ..getUsername().."]"]")
 if isLicenseValid() then
     print("[Lukman Script] [Status: Success Login]")
     sleep(math.random(50,100))
