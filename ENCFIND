@@ -154,7 +154,7 @@ function takeWl()
             end
         end
         if inventory:getItemCount(242) == 0 then
-            print("[Cema Store] ["..bot.name.." WL NOT ENOUGH]")
+            print("[Lukman Script] ["..bot.name.." WL NOT ENOUGH]")
             sleep(5000)
             takeWl()
         end
@@ -200,7 +200,7 @@ function takeSl()
             end
         end
         if inventory:getItemCount(202) == 0 then
-            print("[Cema Store] ["..bot.name.." SL NOT ENOUGH]")
+            print("[Lukman Script] ["..bot.name.." SL NOT ENOUGH]")
             sleep(5000)
             takeSl()
         end
@@ -246,7 +246,7 @@ function takeJammer()
             end
         end
         if inventory:getItemCount(226) == 0 then
-            print("[Cema Store] ["..bot.name.." JAMMER NOT ENOUGH]")
+            print("[Lukman Script] ["..bot.name.." JAMMER NOT ENOUGH]")
             sleep(5000)
             takeJammer()
         end
@@ -292,7 +292,7 @@ function takeEntrance()
             end
         end
         if inventory:getItemCount(EntranceId) == 0 then
-            print("[Cema Store] ["..bot.name.." ENTRANCE NOT ENOUGH]")
+            print("[Lukman Script] ["..bot.name.." ENTRANCE NOT ENOUGH]")
             sleep(5000)
             takeEntrance()
         end
@@ -338,7 +338,7 @@ function takeDoor()
             end
         end
         if inventory:getItemCount(DoorId) == 0 then
-            print("[Cema Store] ["..bot.name.." DOOR NOT ENOUGH]")
+            print("[Lukman Script] ["..bot.name.." DOOR NOT ENOUGH]")
             sleep(5000)
             takeDoor()
         end
@@ -384,7 +384,7 @@ function takeDirt()
             end
         end
         if inventory:getItemCount(2) == 0 then
-            print("[Cema Store] ["..bot.name.." DIRT NOT ENOUGH]")
+            print("[Lukman Script] ["..bot.name.." DIRT NOT ENOUGH]")
             sleep(5000)
             takeDirt()
         end
@@ -752,7 +752,7 @@ function warpCari(neww)
                 return
             end
         end
-        print("[Cema Store] ["..bot.name.." Start Working]")
+        print("[Lukman Script] ["..bot.name.." Start Working]")
     end
     nuked = false
 end
