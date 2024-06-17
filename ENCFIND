@@ -769,9 +769,11 @@ function isLicenseValid()
     return false
 end
 
-print("[Cema Script] [Username = " ..getUsername().."]")
+print("[Lukman Script] [Username: {" ..getUsername().."}]")
 if isLicenseValid() then
-    print("[Cema Script] [Status : Success Login]")
+    print("[Lukman Script] [Status: Success Login]")
+    sleep(math.random(50,100))
+    print("[Lukman Script] [Running Script Find World By Lukman]")
 
 function cariWorld()
     newWorldName = generateRandomWorld(WorldLetter, WithNumber)
@@ -842,5 +844,12 @@ for i = 1, WorldAmount do
 end
 sleep(1000)
 else
-    print("[Cema Script] [Status : Username Not Register!!!]")
+    print("[Lukman Script] [Status : Username Not Register!!!]")
+    sleep(math.random(50,100))
+    print("[Lukman Script] [Contact Cema Store For Register]")
+    messageBox = MessageBox.new()
+    messageBox.title = "Lukman Store"
+    messageBox.description = "Silahkan Register Hubungin Admin"
+    messageBox:send()
+    sleep(math.random(100,200))
 end
