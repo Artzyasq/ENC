@@ -1,8 +1,8 @@
 ---------HIDDEN OPTIONS ROTATION---------
 -----------------<UPPER>-----------------
-MaxSeedGaia = 200                                                               --[Enter the max seed taken from Gaut]
+MaxSeedGaia = 190                                                               --[Enter the max seed taken from Gaut]
 SecWebhook = 'https://discord.com/api/webhooks/'
-MaxSeed = 200
+MaxSeed = 190
 FinishOption = '2'                                                        --[Selections: 1.disconnect, 2.stop script, 3.remove bot, when finished pnb]
 UseGaut = UseGaut:upper()
 WebhookLive = WebhookLive:upper()
@@ -773,7 +773,7 @@ function PNB()
         end
 
         bot.auto_collect = autocollect_setting
-        bot.object_collect_delay = 150
+        bot.object_collect_delay = 100
         bot.ignore_gems = NoTakeGem()
 
         if BreakOption:upper() == "UP" then
@@ -1149,7 +1149,7 @@ function Pokok()
                                 sleep(math.random(100,200))
                             end
 
-                            if findItem(blockID) < 196 then
+                            if findItem(blockID) <= 190 then
                                 takeBlockMain()
                                 sleep(math.random(100,200))
                                 dropGoods()
@@ -1186,7 +1186,7 @@ function Pokok()
                                 retUt()
                                 sleep(math.random(100,200))
 
-                                if findItem(blockID) < 196 then
+                                if findItem(blockID) <= 190 then
                                     takeBlockMain()
                                     dropGoods()
                                     sleep(math.random(100,200))
@@ -1278,7 +1278,7 @@ function JalanIni()
                     sleep(math.random(100,200))
                 end
 
-                if findItem(blockID) < 196 then
+                if findItem(blockID) <= 190 then
                     takeBlockMain()
                     sleep(math.random(100,200))
                     dropGoods()
@@ -1333,11 +1333,21 @@ function isLicenseValid()
     return false
 end
 
-print("[Cema Script] [Username = " ..getUsername().."]")
+print("[Lukman Script] [Username: {" ..getUsername().."}]")
 if isLicenseValid() then
-    print("[Cema Script] [Status : Success Login]")
+    print("[Lukman Script] [Status: Success Login]")
+    sleep(math.random(50,100))
+    print("[Lukman Script] [Running Script PNB By Lukman]")
+
 ----------------------------------------------------------------------
     JalanIni()
 else
-    print("[Cema Script] [Status : Username Not Register!!!]")
+    print("[Lukman Script] [Status : Username Not Register!!!]")
+    sleep(math.random(50,100))
+    print("[Lukman Script] [Contact Cema Store For Register]")
+    messageBox = MessageBox.new()
+    messageBox.title = "Lukman Store"
+    messageBox.description = "Silahkan Register Hubungin Admin"
+    messageBox:send()
+    sleep(math.random(100,200))
 end
