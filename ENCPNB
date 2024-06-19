@@ -1,8 +1,6 @@
 ---------HIDDEN OPTIONS ROTATION---------
 -----------------<UPPER>-----------------
-MaxSeedGaia = 50                                                               --[Enter the max seed taken from Gaut]
 SecWebhook = 'https://discord.com/api/webhooks/'
-MaxSeed = 200
 FinishOption = '2'                                                        --[Selections: 1.disconnect, 2.stop script, 3.remove bot, when finished pnb]
 UseGaut = UseGaut:upper()
 WebhookLive = WebhookLive:upper()
