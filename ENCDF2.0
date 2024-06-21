@@ -53,7 +53,7 @@ WaktuIni = {}
 Break1Distance = {0, 1}
 NukeWorld = false
 PasangPlat = false
-IniIsiDirt = false
+IniIsiDirt = true
 
 sleep(bot.index*ExecuteDelay)
 ------------------START------------------
