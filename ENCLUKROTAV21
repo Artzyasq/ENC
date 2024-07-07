@@ -18,7 +18,6 @@ emoteChat = {
     "/troll","/lol","/smile","/cry","/mad","/wave","/dance","/dab",
     "/love","/kiss","/sleep","/yes","/no","/wink","/cheer","/sad","/fp"
 }
-
 world = ""
 doorFarm = ""
 worldPNB = ""
@@ -43,37 +42,28 @@ fossilz = {}
 world_farmBot = {}
 fired = false
 nuked = false
-
 dividerSSeed = math.ceil(indexLast / #WorldSeed)
 storageSeed = WorldSeed[math.ceil(indexBot / dividerSSeed)]
-
 dividerSPack = math.ceil(indexLast / #WorldPack)
 storagePack = WorldPack[math.ceil(indexBot / dividerSPack)]
-
 dividerSPick = math.ceil(indexLast / #WorldPickaxe)
 worldPickaxe = WorldPickaxe[math.ceil(indexBot / dividerSPick)]
-
 for i = math.floor(BreakTile/2),1,-1 do
     i = i * -1
     table.insert(tileBreak,i)
 end
-
 for i = 0, math.ceil(BreakTile/2) - 1 do
     table.insert(tileBreak,i)
 end
-
 function punch(x,y)
     return bot:hit(bot.x+x,bot.y+y)
 end
-
 function findItem(id)
     return bot:getInventory():findItem(id)
 end
-
 function place(id,x,y)
     return bot:place(bot.x+x,bot.y+y,id)
 end
-
 function tilePunch(x,y)
     for _,num in pairs(tileBreak) do
         if getTile(x - 1,y + num).fg ~= 0 or getTile(x - 1,y + num).bg ~= 0 then
@@ -82,7 +72,6 @@ function tilePunch(x,y)
     end
     return false
 end
-
 function tilePlace(x,y)
     for _,num in pairs(tileBreak) do
         if getTile(x - 1,y + num).fg == 0 and getTile(x - 1,y + num).bg == 0 then
@@ -91,7 +80,6 @@ function tilePlace(x,y)
     end
     return false
 end
-
 function tablelength(T)
     local count = 0
     for _ in pairs(T) do 
@@ -99,7 +87,6 @@ function tablelength(T)
     end
     return count
 end
-
 function split(inputstr, sep)
     if sep == nil then
         sep = "%s"
@@ -110,7 +97,6 @@ function split(inputstr, sep)
     end
     return t
 end
-
 function read(filedhika)
     local fileName = filedhika
     local file = io.open(fileName, "r")
@@ -218,7 +204,6 @@ function WebhookKedua(world)
     webhook.embed1:addField("<:DigiVend:1163098934315581440>Result Bot","\n<:SeedProfit:1156653454899556434> | Pack Name : "..BuyPack.."\n<:SeedProfit:1156653454899556434> | Pack Profit : "..profit .."\n<:Laser_Grid_Seed:1190695138947760249> | Seed Profit : "..profitSeed,false);
     webhook.embed1:addField("<:growscan:1002995962572193833> Storage Float",infoPack() ,false);
     webhook.embed1:addField("<:farmerbot:1227256310878179338>Last Drop","<t:"..os.time()..":R> **|** "..bot.name.."("..bot.level..")" ,false);
-
     webhook.embed1.footer.text = "Cema Script | Rotation V2.1\n"..getCurrentDateTime()
     webhook.embed1.footer.icon_url = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
     if ProfitId ~= "" then
@@ -229,7 +214,6 @@ function WebhookKedua(world)
 end
 function countLinesInFile(filename)
     local file = io.open(filename, "r")
-
     if not file then
         return nil, "Error: Unable to open the file."
     else
@@ -237,12 +221,10 @@ function countLinesInFile(filename)
         for _ in file:lines() do
             lineCount = lineCount + 1
         end
-
         file:close()
         return lineCount
     end
 end
-
 a,c = countLinesInFile(WorldFarm)
 function WebhookPertama()
 				webhook = Webhook.new(WebhookUrl)
@@ -263,8 +245,6 @@ function WebhookPertama()
                     webhook:send()
                 end
 		end
-
-
 function waktuWorld()
     strWaktu = ""
     for _,worldzz in pairs(world_farmBot) do
@@ -272,11 +252,9 @@ function waktuWorld()
     end
     return strWaktu
 end
-
 function round(n)
     return n % 1 > 0.5 and math.ceil(n) or math.floor(n)
 end
-
 function onVarSearchTutorial(variant, netid)
     if variant:get(0):getString() == "OnRequestWorldSelectMenu" then
         local text = variant:get(1):getString()
@@ -294,7 +272,6 @@ function onVarSearchTutorial(variant, netid)
         end
     end
 end
-
 function tileDrop(x,y,num)
     local count = 0
     local stack = 0
@@ -309,7 +286,6 @@ function tileDrop(x,y,num)
     end
     return false
 end
-
 function secondON(seconds)
 	local seconds = tonumber(seconds)
 	
@@ -322,7 +298,6 @@ function secondON(seconds)
 		return hours .. ":" .. mins .. ":" .. secs
 	end
 end
-
 function botInfo(webhookinfo,status)
     local text = [[
         $webHookUrl = "]]..webhookinfo..[["
@@ -336,8 +311,6 @@ function botInfo(webhookinfo,status)
     file:write(text)
     file:close()
 end
-
-
 function AutoClotches()
     currentClothes = {}
     for _,inventory in pairs(bot:getInventory():getItems()) do
@@ -362,7 +335,6 @@ function AutoClotches()
         end
     end
 end
-
 function nukeWorldInfo(WebhookUrl,status)
     local text = [[
         $webHookUrl = "]]..WebhookUrl..[["
@@ -376,16 +348,13 @@ function nukeWorldInfo(WebhookUrl,status)
     file:write(text)
     file:close()
 end
-
 function OnVariantList(variant, netid)
     if variant:get(0):getString() == "OnConsoleMessage" then
         if variant:get(1):getString():lower():find("inaccessible") then
             nuked = true
-            print("[Lukman Script] ["..bot.name:upper().." inaccessible "..world.."]")
         end
     end
 end
-
 function warp(world,id)
     cok = 0
     nuked = false
@@ -452,7 +421,6 @@ function warp(world,id)
     sleep(100)
     removeEvent(Event.variantlist)
 end
-
 function detect()
     local store = {}
     local count = 0
@@ -474,7 +442,6 @@ function detect()
         end
     end
 end
-
 function packInfo(link,id,desc)
     local text = [[
         $webHookUrl = "]]..link..[[/messages/]]..id..[["
@@ -515,7 +482,6 @@ function packInfo(link,id,desc)
     file:write(text)
     file:close()
 end
-
 function reconnect(world,id,x,y)
     if bot.level >= max_lvl then
         bot:stopScript()
@@ -574,7 +540,6 @@ function reconnect(world,id,x,y)
         
     end
 end
-
 function reconnectHarvest(world,id)
     if bot.status ~= BotStatus.online or bot:getPing() == 0 then
         
@@ -600,7 +565,6 @@ function reconnectHarvest(world,id)
         
     end
 end
-
 function infoPack()
     local str = ""
     growscan = getBot():getWorld().growscan
@@ -609,7 +573,6 @@ function infoPack()
     end
     return str
 end
-
 function storeSeed(world)
     bot.auto_collect = false
     bot.collect_interval = 9999999
@@ -651,7 +614,6 @@ function storeSeed(world)
     bot.auto_collect = true
     bot.collect_interval = 100
 end
-
 function clear()
     for _,item in pairs(AutoTrash) do
         if bot:getInventory():findItem(item) > 0 then
@@ -669,15 +631,12 @@ function isPlantable(tile)
     local collision = getInfo(tempTile.fg).collision_type
     return tempTile and (collision == 1 or collision == 2)
 end
-
-
 function goExit()
     while bot:getWorld().name ~= "EXIT" do
         bot:sendPacket(3,"action|join_request\nname|EXIT\ninvitedWorld|0")
         sleep(2000)
     end
 end
-
 function checkTutorial()
     goExit()
     sleep(100)
@@ -693,7 +652,6 @@ function checkTutorial()
     removeEvent(Event.variantlist)
     sleep(100)
 end
-
 function pnbTutorial()
     warp(worldPNB,"")
     sleep(100)
@@ -715,8 +673,8 @@ function pnbTutorial()
                 end
                 while tilePlace(ex,ye) and bot:getWorld().name == worldPNB do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex + i,ye - 1).fg == 0 and getTile(ex + i,ye - 1).bg == 0 then
-                            place(number_block,1,-1)
+                        if getTile(ex - 1,ye + i).fg == 0 and getTile(ex - 1,ye + i).bg == 0 then
+                            place(number_block,-1,i)
                             sleep(set_place)
                             reconnect(worldPNB,"",ex,ye)
                         end
@@ -724,8 +682,8 @@ function pnbTutorial()
                 end
                 while tilePunch(ex,ye) and bot:getWorld().name == worldPNB do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex + i,ye - 1).fg ~= 0 or getTile(ex + i,ye - 1).bg ~= 0 then
-                            punch(i,-1)
+                        if getTile(ex - 1,ye + i).fg ~= 0 or getTile(ex - 1,ye + i).bg ~= 0 then
+                            punch(-1,i)
                             if RandomPunch then
                                 sleep(math.random(set_punch - DelayRandomPunch,set_punch + DelayRandomPunch))
                             else
@@ -741,7 +699,6 @@ function pnbTutorial()
         checkTutorial()
     end
 end
-
 function pnbOtherWorld()
     worldBreak,doorBreak = read(WorldBreak)
     sleep(100)
@@ -756,8 +713,8 @@ function pnbOtherWorld()
             while bot:getInventory():findItem(number_block) > BreakTile and bot:getInventory():findItem(number_seed) <= 190 and bot.x == ex and bot.y == ye and bot:getWorld().name == worldBreak:upper() do
                 while tilePlace(ex,ye) do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex + i,ye - 1).fg == 0 and getTile(ex + i,ye - 1).bg == 0 then
-                            place(number_block,1,-1)
+                        if getTile(ex - 1,ye + i).fg == 0 and getTile(ex - 1,ye + i).bg == 0 then
+                            place(number_block,-1,i)
                             sleep(set_place)
                             reconnect(worldBreak,doorBreak,ex,ye)
                         end
@@ -765,8 +722,8 @@ function pnbOtherWorld()
                 end
                 while tilePunch(ex,ye) do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex + i,ye - 1).fg ~= 0 or getTile(ex + i,ye - 1).bg ~= 0 then
-                            punch(i,-1)
+                        if getTile(ex - 1,ye + i).fg ~= 0 or getTile(ex - 1,ye + i).bg ~= 0 then
+                            punch(-1,i)
                             if RandomPunch then
                                 sleep(math.random(set_punch - DelayRandomPunch,set_punch + DelayRandomPunch))
                             else
@@ -780,7 +737,6 @@ function pnbOtherWorld()
         end
     end
 end
-
 function pnb(world)
     if bot:isInWorld() then
         if AutoChat then
@@ -830,8 +786,8 @@ function pnb(world)
             while bot:getInventory():findItem(number_block) > BreakTile and bot:getInventory():findItem(number_seed) <= 190 and bot.x == ex and bot.y == ye do
                 while tilePlace(ex,ye) do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex + i,ye - 1).fg == 0 and getTile(ex + i,ye - 1).bg == 0 then
-                            place(number_block,1,-1)
+                        if getTile(ex - 1,ye + i).fg == 0 and getTile(ex - 1,ye + i).bg == 0 then
+                            place(number_block,-1,i)
                             sleep(set_place)
                             reconnect(world,doorFarm,ex,ye)
                         end
@@ -839,8 +795,8 @@ function pnb(world)
                 end
                 while tilePunch(ex,ye) do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex + i,ye - 1).fg ~= 0 or getTile(ex + i,ye - 1).bg ~= 0 then
-                            punch(i,-1)
+                        if getTile(ex - 1,ye + i).fg ~= 0 or getTile(ex - 1,ye + i).bg ~= 0 then
+                            punch(-1,i)
                             if RandomPunch then
                                 sleep(math.random(set_punch - DelayRandomPunch,set_punch + DelayRandomPunch))
                             else
@@ -878,7 +834,6 @@ function pnb(world)
     end
     sleep(100)
 end
-
 function buyPack(world)
     bot.auto_collect = false
     bot.collect_interval = 9999999
@@ -957,7 +912,6 @@ function buyPack(world)
     bot.collect_interval = 100
     sleep(100)
 end
-
 function isPlantable(tile)
     local tempTile = getTile(tile.x, tile.y + 1)
     if not tempTile.fg then 
@@ -966,11 +920,9 @@ function isPlantable(tile)
     local collision = getInfo(tempTile.fg).collision_type
     return tempTile and ( collision == 1 or collision == 2 )
 end
-
 function plant(world)
     print("[Lukman Store] "..bot.name:upper().." Planting Tree")
     sleep(math.random(100,200))
-
     for _,tile in pairs(bot:getWorld():getTiles()) do
     if Zigzag then
         if (tile.y%2) == 0 then
@@ -1017,7 +969,6 @@ else
 end
 end
 end
-
 function UsePickaxeaxe()
     bot.auto_collect = false
     sleep(100)
@@ -1054,7 +1005,6 @@ function UsePickaxeaxe()
     sleep(100)
     bot.auto_collect = true
 end
-
 function takeFirehose()
     bot.auto_collect = false
     sleep(100)
@@ -1088,7 +1038,6 @@ function takeFirehose()
     sleep(100)
     bot.auto_collect = true
 end
-
 function take(world)
     warp(storageSeed,DoorSeed)
     sleep(100)
@@ -1110,7 +1059,6 @@ function take(world)
     warp(world,doorFarm)
     sleep(100)
 end
-
 function harvest(world)
     tiley = 0
     tree[world] = 0
@@ -1194,7 +1142,6 @@ function harvest(world)
                                 end
                             end
                         end
-
                     else
                         if Zigzag then
                             if (tile.y%2) == 1  then
@@ -1226,7 +1173,6 @@ function harvest(world)
                             end
                         end
                     end    
-
                     if root_farm then
                         for _, i in pairs(mode3Tile) do
                             while getTile(tile.x + i, tile.y + 1).fg == (number_block + 4) and bot.x == tile.x and bot.y == tile.y do
@@ -1256,7 +1202,6 @@ function harvest(world)
                         tiley = tile.y
                         sleep(100)
                         WebhookPertama()
-
                     end
                     for _, i in pairs(mode3Tile) do
                         if getTile(tile.x + i,tile.y).fg == number_seed and getTile(tile.x + i,tile.y):canHarvest() and bot:getWorld():hasAccess(tile.x + i,tile.y) > 0 and bot:getWorld().name == world:upper() then
@@ -1339,7 +1284,6 @@ function harvest(world)
         end
     end
 end
-
 function clearBlocks()
     for _,tile in pairs(bot:getWorld():getTiles()) do
         if getTile(tile.x,tile.y).fg == number_block and bot.level >= HarvestOnlyLvl then
@@ -1352,7 +1296,6 @@ function clearBlocks()
         end
     end
 end
-
 function join()
     print("[Lukman Script] ["..bot.name:upper().." Refresh World ]")
     for _,wurld in pairs(RefreshList) do
@@ -1360,7 +1303,6 @@ function join()
         sleep(set_warp)
     end
 end
-
 function checkFire(world)
     totalTree = 0
     readyTree = 0
@@ -1385,7 +1327,6 @@ function checkFire(world)
     end
     fossilz[world] = fossil
 end
-
 function isLicenseValid()
     local client = HttpClient.new()
     client.url = "https://raw.githubusercontent.com/Artzyasq/LICENSE-1/main/LISENSI"
@@ -1398,40 +1339,35 @@ function isLicenseValid()
     return false
 end
 
+print("[Lukman Script] [Username: [" ..getUsername().."]"]")
 print("[Lukman Script] [Username: {" ..getUsername().."}]")
 if isLicenseValid() then
     print("[Lukman Script] [Status: Success Login]")
     sleep(math.random(50,100))
     print("[Lukman Script] [Running Script Rotation By Lukman]")
-
     while bot.status ~= BotStatus.online do
         sleep(1000)
         while bot.status == BotStatus.account_banned do
             bot:stopScript()
         end
     end
-
     for i = indexBot, 1, -1 do
             sleep(DelayExecute)
     end
-
     while bot.status ~= BotStatus.online do
         sleep(1000)
         while bot.status == BotStatus.account_banned do
             bot:stopScript()
         end
     end
-
     if UsePickaxe and bot:getInventory():findItem(PickaxeId) == 0 then
         UsePickaxeaxe()
         sleep(100)
     end
-
     if PnbHome then
         checkTutorial()
         sleep(100)
     end
-
     while true do
         nuked = false
         fired = false
@@ -1524,7 +1460,6 @@ if isLicenseValid() then
         end
         if not Looping then 
             break
-
             end
     end
 else
