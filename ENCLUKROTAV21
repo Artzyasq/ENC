@@ -1,4 +1,4 @@
-max_bot_events = 50                                                      -- (don't edit if don't know how it work!)
+max_bot_events = 50                                                      -- (don't edit if don't know how it work1)
 for i, botz in pairs(getBots()) do
     if botz.name:upper() == bot.name:upper() then
         indexBot = i
