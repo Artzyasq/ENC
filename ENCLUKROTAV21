@@ -381,6 +381,7 @@ function OnVariantList(variant, netid)
     if variant:get(0):getString() == "OnConsoleMessage" then
         if variant:get(1):getString():lower():find("inaccessible") then
             nuked = true
+            print("[Lukman Script] ["..bot.name:upper().." inaccessible "..world.."]")
         end
     end
 end
@@ -714,8 +715,8 @@ function pnbTutorial()
                 end
                 while tilePlace(ex,ye) and bot:getWorld().name == worldPNB do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex - 1,ye + i).fg == 0 and getTile(ex - 1,ye + i).bg == 0 then
-                            place(number_block,-1,i)
+                        if getTile(ex + i,ye - 1).fg == 0 and getTile(ex + i,ye - 1).bg == 0 then
+                            place(number_block,1,-1)
                             sleep(set_place)
                             reconnect(worldPNB,"",ex,ye)
                         end
@@ -723,8 +724,8 @@ function pnbTutorial()
                 end
                 while tilePunch(ex,ye) and bot:getWorld().name == worldPNB do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex - 1,ye + i).fg ~= 0 or getTile(ex - 1,ye + i).bg ~= 0 then
-                            punch(-1,i)
+                        if getTile(ex + i,ye - 1).fg ~= 0 or getTile(ex + i,ye - 1).bg ~= 0 then
+                            punch(i,-1)
                             if RandomPunch then
                                 sleep(math.random(set_punch - DelayRandomPunch,set_punch + DelayRandomPunch))
                             else
@@ -755,8 +756,8 @@ function pnbOtherWorld()
             while bot:getInventory():findItem(number_block) > BreakTile and bot:getInventory():findItem(number_seed) <= 190 and bot.x == ex and bot.y == ye and bot:getWorld().name == worldBreak:upper() do
                 while tilePlace(ex,ye) do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex - 1,ye + i).fg == 0 and getTile(ex - 1,ye + i).bg == 0 then
-                            place(number_block,-1,i)
+                        if getTile(ex + i,ye - 1).fg == 0 and getTile(ex + i,ye - 1).bg == 0 then
+                            place(number_block,1,-1)
                             sleep(set_place)
                             reconnect(worldBreak,doorBreak,ex,ye)
                         end
@@ -764,8 +765,8 @@ function pnbOtherWorld()
                 end
                 while tilePunch(ex,ye) do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex - 1,ye + i).fg ~= 0 or getTile(ex - 1,ye + i).bg ~= 0 then
-                            punch(-1,i)
+                        if getTile(ex + i,ye - 1).fg ~= 0 or getTile(ex + i,ye - 1).bg ~= 0 then
+                            punch(i,-1)
                             if RandomPunch then
                                 sleep(math.random(set_punch - DelayRandomPunch,set_punch + DelayRandomPunch))
                             else
@@ -829,8 +830,8 @@ function pnb(world)
             while bot:getInventory():findItem(number_block) > BreakTile and bot:getInventory():findItem(number_seed) <= 190 and bot.x == ex and bot.y == ye do
                 while tilePlace(ex,ye) do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex - 1,ye + i).fg == 0 and getTile(ex - 1,ye + i).bg == 0 then
-                            place(number_block,-1,i)
+                        if getTile(ex + i,ye - 1).fg == 0 and getTile(ex + i,ye - 1).bg == 0 then
+                            place(number_block,1,-1)
                             sleep(set_place)
                             reconnect(world,doorFarm,ex,ye)
                         end
@@ -838,8 +839,8 @@ function pnb(world)
                 end
                 while tilePunch(ex,ye) do
                     for _,i in pairs(tileBreak) do
-                        if getTile(ex - 1,ye + i).fg ~= 0 or getTile(ex - 1,ye + i).bg ~= 0 then
-                            punch(-1,i)
+                        if getTile(ex + i,ye - 1).fg ~= 0 or getTile(ex + i,ye - 1).bg ~= 0 then
+                            punch(i,-1)
                             if RandomPunch then
                                 sleep(math.random(set_punch - DelayRandomPunch,set_punch + DelayRandomPunch))
                             else
