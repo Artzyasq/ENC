@@ -9,6 +9,7 @@ DelayPlant = 100
 DelayHarvest = 100
 AutoSkin = 'true'
 UseFIle = 'true'
+SprintBot = 'true'
 SecWebhookUrl = 'https://discord.com/api/webhooks/1235979225799065650/lhwvDAcZk7do6550XOPZ2YoWoRXGzPpenF9HFljupBlQNwB_umK7y3YcmifWz7zq7J1k'
 SprintBot = SprintBot:upper()
 UseFIle = UseFIle:upper()
