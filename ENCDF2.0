@@ -1,1304 +1,351 @@
----------HIDDEN OPTIONS ROTATION---------
------------------<UPPER>-----------------
-ListWorld = {
-    'WORLD:DOOR',
-    'WORLD:DOOR',
-    'WORLD:DOOR',
-    }
-DelayPlant = 100
-DelayHarvest = 100
-AutoSkin = 'true'
-UseFIle = 'true'
-SprintBot = 'true'
-SecWebhookUrl = 'https://discord.com/api/webhooks/1235979225799065650/lhwvDAcZk7do6550XOPZ2YoWoRXGzPpenF9HFljupBlQNwB_umK7y3YcmifWz7zq7J1k'
-SprintBot = SprintBot:upper()
-UseFIle = UseFIle:upper()
-WebhookLive = WebhookLive:upper()
-MultiBots = MultiBots:upper()
-BotAnimation = BotAnimation:upper()
-AutoSkin = AutoSkin:upper()
-TakePlatform = TakePlatform:upper()
-BreakRock = BreakRock:upper()
-BreakLava = BreakLava:upper()
-TakePickaxe = TakePickaxe:upper()
-SavingSeed = SavingSeed:upper()
------------------<BOT>-----------------
-function AnimasiIni()
-    if BotAnimation:upper() == "TRUE" then
-        return true
-    elseif BotAnimation:upper() == "FALSE" then
-        return false
-    end
-end
-
 bot = getBot()
-bot.move_range = MovementSpeed
-bot.move_interval = Interval
-bot.collect_interval = 100
-bot.auto_collect = false
-bot.auto_reconnect = true
-bot.reconnect_interval = ReconnectDelay
-bot.collect_range = 3
-bot.legit_mode = AnimasiIni()
-------------------ID------------------
-WaktuAwal = os.time()
-ListWorld = {}
-TileY = {}
-PlatY = {}
-SelectBot = {}
-BotTileY = {}
-PlaceY = {}
-BotPlaceY = {}
-WaktuIni = {}
-Break1Distance = {0, 1}
-NukeWorld = false
-PasangPlat = false
-IniIsiDirt = true
+bot.auto_trash = false
+nuked = false
 
-sleep(bot.index*ExecuteDelay)
-------------------START------------------
-for i = 25, 53, 2 do
-    table.insert(TileY, i)
-end
-
-for i = 22, 2, -2 do
-    table.insert(PlaceY, i)
-end
-
-for i = 52, 2, -2 do
-    table.insert(PlatY, i)
-end
-
-for _, BotIni in pairs(getBots()) do
-    if BotIni.selected then
-        table.insert(SelectBot, BotIni)
+for i, botz in pairs(getBots()) do
+    if botz.name:upper() == bot.name:upper() then
+        indexBot = i
+        startIndex = (i - 1) * WorldPerBot + 1
+        endIndex = startIndex + WorldPerBot - 1
+        sleep((indexBot - 1) * delayExecute)
+        break
     end
 end
 
-sleep(math.random(100,200))
-
-for i, BotIni in pairs(SelectBot) do
-    if BotIni.name:upper() == bot.name:upper() then
-        NumBot = i
-    end
-		NumLastBot = i
-end
-
-BotTileY[NumBot] = {}
-BotPlaceY[NumBot] = {}
-
-function read(filename)
-    local ListWorld = {}
-    local file = io.open(filename, "r")
-    if file then
-        for line in file:lines() do
-            table.insert(ListWorld, line)
-        end
-        file:close()
-    else
-        print("Can't Found File ".. filename)
-        bot:stopScript()
-    end
-    
-    return ListWorld
-end
-
-if MultiBots:upper() == "TRUE" then
-    for i, BotIni in pairs(SelectBot) do
-        if BotIni.name:upper() == bot.name:upper() then
-            if i == 1 or i == 2 then
-                PasangPlat = true
-            end
-    
-            if i%2 == 0 then
-                if TakePlatform:upper() == "TRUE" then
-                    botSideX = {0, 1}
-                else
-                    botSideX = {0}
-                end
-                botPlatX = 1
-            else
-                if TakePlatform:upper() == "TRUE" then
-                    botSideX = {98, 99}
-                else
-                    botSideX = {99}
-                end
-                botPlatX = 98
-            end
-        end
-
-    end
-
-    for i = NumBot, #TileY, #SelectBot do
-        table.insert(BotTileY[NumBot], TileY[i])
-    end
-    
-    for i = NumBot, #PlaceY, #SelectBot do
-        table.insert(BotPlaceY[NumBot], PlaceY[i])
-    end
-    
-else
-
-    for _, ye in pairs(TileY) do
-        table.insert(BotTileY[NumBot], ye)
-    end
-    
-    for _, ye in pairs(PlaceY) do
-        table.insert(BotPlaceY[NumBot], ye)
-    end
-
-    if TakePlatform:upper() == "TRUE" then
-        botSideX = {0, 1}
-        botSideX2 = {98, 99}
-    else
-        botSideX = {0}
-        botSideX2 = {99}
-    end
-
-    botPlatX = 1
-    botPlatX2 = 98
-    PasangPlat = true
-
-end
-
-worldPlatIni, doorPlatIni = PlatformStorage:upper():match("([^|]+):([^|]+)")
-
-worldSeedIni, doorSeedIni = SeedStorage:upper():match("([^|]+):([^|]+)")
-
-worldPickaxeIni, doorPickaxeIni = PickaxeStorage:upper():match("([^|]+):([^|]+)")
-
-function AmbilUptime()
-    local WaktuSekarang = os.time()
-    local elapsedTime = WaktuSekarang - WaktuAwal
-    local hours = math.floor(elapsedTime / 3600)
-    local minutes = math.floor((elapsedTime % 3600) / 60)
-    local seconds = math.floor(elapsedTime % 60)
-    return string.format("%02d:%02d:%02d",hours,minutes,seconds)
-end
-
-function WebhookPertama()
-    local PrimWebhook = Webhook.new(WebhookUrl)
-    PrimWebhook.embed1.use = true
-    PrimWebhook.username = "CEMA SCRIPT UPDATE"
-    PrimWebhook.avatar_url = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
-    PrimWebhook.embed1.title = "INFORMATION"
-    PrimWebhook.embed1.thumbnail = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
-    PrimWebhook.embed1.color = 4120036
-    PrimWebhook.embed1.description = "Last Seen <t:".. os.time() ..":R>"
-    
-    local desc = ""
-    for _, BotIni in pairs(getBots()) do
-        if BotIni.selected == true then
-            PrimWebhook.embed1:addField("<:farmerbot:1227256310878179338> "..BotIni.name:upper(),"\nStatus: ".. getStatus(BotIni.status) .."\nPing: ".. bot:getPing() .."\nLevel: ".. BotIni.level .."", false)
-            desc = desc 
-        end
-    end
-
-    PrimWebhook.embed1:addField("<:world:1188855761368006736> List World (".. AmbilNomerFarmIni()..")", AmbilFarmListIni(), false)
-
-    PrimWebhook.embed1.footer.text = "Lucifer Uptime - " .. AmbilUptime() .."\nCema Script [Dirt Farm 1.2]"
-    PrimWebhook.embed1.footer.icon_url = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
-
-    if WebhookLive:upper() == "TRUE" then
-        PrimWebhook:edit(BotId)
-    else
-        PrimWebhook:send()
-    end
-end
-
-function WebhookKetiga(notify)
-    local ThiWebhook = Webhook.new(SecWebhookUrl)
-    ThiWebhook.embed1.use = true
-    ThiWebhook.username = "CEMA SCRIPT UPDATE"
-    ThiWebhook.avatar_url = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
-    ThiWebhook.embed1.color = 4120036
-    ThiWebhook.embed1.description = "**<:farmerbot:1227256310878179338> ".. bot.name:upper() .." ".. notify .."**"
-    ThiWebhook:send()
-end
-
-function WebhookKeempat(notify)
-    local FouWebhook = Webhook.new(WebhookUrl)
-    FouWebhook.content = "@everyone"
-    FouWebhook.embed1.use = true
-    FouWebhook.username = "CEMA SCRIPT UPDATE"
-    FouWebhook.avatar_url = "https://cdn.discordapp.com/attachments/1024312738551443456/1218021025787154442/IMG-20240315-WA0049.png?ex=6606257a&is=65f3b07a&hm=a28a43e1d7091dcde289b5a09df396f11589210e2b6f8f1d7ea249b51080a301&"
-    FouWebhook.embed1.color = 4120036
-    FouWebhook.embed1.description = "**<:farmerbot:1227256310878179338> ".. bot.name:upper() .." ".. notify .."**"
-    FouWebhook:send()
-end
-
-function getStatus(stat)
-    local online = "Online <a:onlinegif:1179100715747131474>"
-    local offline = "Offline <a:offlinegif:1179100927345561620>"
-    if stat == BotStatus.online then
-        return online
-    else
-        return offline
-    end
-end
-
-function AmbilFarmListIni()
-    local desc = ""
-    if UseFIle:upper() == "TRUE" then
-        for _, WorldUseFile in pairs(read(WorldFile)) do
-            UseFileIni, UseFileDoor = WorldUseFile:upper():match("([^|]+):([^|]+)")
-            if UseFileIni == WorldDfIni:upper() then
-                desc = desc .."\n<a:Arrow:1094710751387713663> ".. UseFileIni:upper().. "" .. WaktuIni[UseFileIni] .. ""
-            elseif WaktuIni[UseFileIni] then
-                desc = desc .."\n<a:Arrow:1094710751387713663> ".. UseFileIni:upper()  .. WaktuIni[UseFileIni] .. ""
-            else
-                desc = desc .."\n<a:Arrow:1094710751387713663> ".. UseFileIni:upper() .. " **[** ? **]** **[** ? **]**"
-            end
-        end
-    else
-        for _, WorldNotUseFile in pairs(listWorld) do
-            NotUseFileIni, NotUseFileDoor = WorldNotUseFile:upper():match("([^|]+):([^|]+)")
-            if NotUseFileIni == WorldDfIni:upper() then
-                desc = desc .."\n<a:Arrow:1094710751387713663> ".. NotUseFileIni:upper() .."".. WaktuIni[NotUseFileIni] .. ""
-            elseif WaktuIni[NotUseFileIni] then
-                desc = desc .."\n<a:Arrow:1094710751387713663> " .. NotUseFileIni:upper()  .. WaktuIni[NotUseFileIni] .. ""
-            else
-                desc = desc .."\n<a:Arrow:1094710751387713663> ".. NotUseFileIni:upper() .. " **[** ? **]** **[** ? **]**"
-            end
-        end
-    end
-    return desc
-end
-
-function AmbilNomerFarmIni()
-    if UseFIle:upper() == "TRUE" then
-        for i, WorldUseFile in pairs(read(WorldFile)) do
-            UseFileIni, UseFileDoor = WorldUseFile:upper():match("([^|]+):([^|]+)")
-            if UseFileIni:upper() == WorldDfIni:upper() then
-                return i
-            end
-        end
-    else
-        for i, WorldNotUseFile in pairs(listWorld) do
-            NotUseFileIni, NotUseFileDoor = WorldNotUseFile:upper():match("([^|]+):([^|]+)")
-            if NotUseFileIni:upper() == WorldDfIni:upper() then
-                return i
-            end
-        end
-    end
-    return "0"
+function punch(x,y)
+    return bot:hit(bot.x+x,bot.y+y)
 end
 
 function findItem(id)
     return bot:getInventory():findItem(id)
 end
 
-function gscanFloat(id)
-    return bot:getWorld().growscan:getObjects()[id] or 0
+function place(id,x,y)
+    return bot:place(bot.x+x,bot.y+y,id)
 end
 
-function gscanBlock(id)
-    return bot:getWorld().growscan:getTiles()[id] or 0
+function findPath(x,y)
+    return bot:findPath(x,y)
+end
+
+function warp(worldName)
+    while not bot:isInWorld(worldName:upper()) do
+        while bot.status ~= BotStatus.online do
+            sleep(1000)
+        end
+        bot:warp(worldName)
+        sleep(delayWarp)
+    end
+end
+
+function join(worldName,id)
+    while bot:getWorld():getTile(bot.x,bot.y).fg == 6 do 
+        bot:sendPacket(3,"action|join_request\nname|"..worldName:upper().."|"..id:upper().."\ninvitedWorld|0")
+        sleep(1000)
+    end
+end
+
+function reconnect(world,id,x,y)
+    if bot.status ~= BotStatus.online then
+        while bot.status ~= BotStatus.online do
+            bot:connect()
+            sleep(8000)
+            if bot.status == BotStatus.account_banned then
+                bot.auto_reconnect = false
+                stopScript()
+            end
+        end
+        while not bot:isInWorld(world:upper()) do
+            bot:warp(world)
+            sleep(delayWarp)
+        end
+        if id then
+            while getTile(getBot().x,getBot().y).fg == 6 do
+                bot:warp(world,id)
+                sleep(delayWarp)
+            end
+        end
+        if x and y then
+            bot:findPath(x,y)
+            sleep(100)
+        end
+    end
 end
 
 function round(n)
     return n % 1 > 0.5 and math.ceil(n) or math.floor(n)
 end
 
-function tileDrop(x,y,num)
-    local count = 0
-    local stack = 0
-    for _,obj in pairs(bot:getWorld():getObjects()) do
-        if round(obj.x / 32) == x and math.floor(obj.y / 32) == y then
-            count = count + obj.count
-            stack = stack + 1
-        end
-    end
-    if stack < 20 and count <= (4000 - num) then
-        return true
-    end
-    return false
-end
-
-function checkNuked(variant, netid)
-    if variant:get(0):getString() == "OnConsoleMessage" then
-        if variant:get(1):getString():find("That world is inaccessible") then
-            NukeWorld = true
-        end
-    end
-end
-
-function Warp(worldName, doorID)
-    ChanceLog = 0
-    NukeWorld = false
-    while not bot:isInWorld(worldName:upper())do
-        print("[Lukman Script] ["..bot.name:upper().." Warping To "..worldName.."]")
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKetiga("Warping To World")
-        sleep(math.random(100,200))
-
-        if bot.status == BotStatus.online and bot:getPing() == 0 then
-            bot:disconnect()
-            sleep(math.random(500,750))
-        end
-
-        while bot.status ~= BotStatus.online do
-            sleep(math.random(500,750))
-            while bot.status == BotStatus.account_banned do
-                sleep(math.random(10000,12000))
-                WebhookKeempat("Get Banned! @everyone")
-                bot:stopScript()
-            end
-        end
-        addEvent(Event.variantlist, checkNuked)
-        if doorID ~= "" then
-            bot:sendPacket(3,"action|join_request\nname|"..worldName:upper().."|"..doorID:upper().."\ninvitedWorld|0")
-        else
-            bot:sendPacket(3,"action|join_request\nname|"..worldName:upper().."\ninvitedWorld|0")
-        end
-        listenEvents(5)
-        sleep(WarpDelay)
-        if ChanceLog == 5 then
-            print("[Lukman Script] ["..bot.name:upper().." Hard Warping!]")
-            sleep(math.random(100,200))
-            WebhookPertama()
-            sleep(math.random(100,200))
-            WebhookKeempat("Hard Warping!")
-            sleep(math.random(100,200))
-
-            while bot.status == BotStatus.online do
-                bot:disconnect()
-                bot.auto_reconnect = false
-                sleep(math.random(500,750))
-            end
-            sleep(3 * 60000)
-            ChanceLog = 0
-            bot.auto_reconnect = true
-        else
-            ChanceLog = ChanceLog + 1
-        end
-    end
-    if NukeWorld then
-        print("[Lukman Script] "..bot.name:upper().." Can't Join World Nuked, World = "..worldName)
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKeempat("Can't Join "..worldName..", Nuked!")
-        sleep(math.random(100,200))
-    else
-        while bot:isInWorld(worldName) and doorID ~= "" and getTile(bot.x,bot.y).fg == 6 do
-            while bot.status ~= BotStatus.online or bot:getPing() == 0 do
-                sleep(math.random(500,750))
-                while bot.status == BotStatus.account_banned do
-                    sleep(math.random(10000,12000))
-                    bot:stopScript()
-                end
-            end
-            for i = 1,3 do
-                if getTile(bot.x,bot.y).fg == 6 then
-                    bot:sendPacket(3,"action|join_request\nname|"..worldName:upper().."|"..doorID:upper().."\ninvitedWorld|0")
-                    sleep(math.random(1000,2000))
-                end
-            end
-            if getTile(bot.x,bot.y).fg == 6 then
-                print("[Lukman Script] "..bot.name:upper().." Can't Entered Door At World "..worldName)
-                sleep(math.random(100,200))
-                WebhookPertama()
-                sleep(math.random(100,200))
-                WebhookKeempat("Can't Entered Door At World "..worldName.."]")
-                sleep(math.random(100,200))
-
-                NukeWorld = true
-            end
-        end
-    end
-    sleep(math.random(100,200))
-    removeEvent(Event.variantlist)
-end
-
-function ReconnectIni(worldName, doorID)
-    if bot.status ~= BotStatus.online or bot:getPing() == 0 then
-        print("[Lukman Script] ["..bot.name:upper().." Disconnected!]")
-        sleep(math.random(100,200))
-        WebhookKeempat("Disconnected!")
-        sleep(math.random(100,200))
-
-        while bot.status ~= BotStatus.online or bot:getPing() == 0 do
-            sleep(math.random(500,750))
-            if bot.status == BotStatus.account_banned then
-                sleep(math.random(10000,12000))
-                WebhookKeempat("Get Banned! @everyone")
-                bot:stopScript()
-            end
-        end
-        while bot:getWorld().name ~= worldName:upper() do
-            bot:sendPacket(3,"action|join_request\nname|"..worldName:upper().."\ninvitedWorld|0")
-            sleep(WarpDelay)
-        end
-        if doorID ~= "" and getTile(bot.x,bot.y).fg == 6 then
-            bot:sendPacket(3,"action|join_request\nname|"..worldName:upper().."|"..doorID:upper().."\ninvitedWorld|0")
-            sleep(math.random(1000,2000))
-        end
-        print("[Lukman Script] ["..bot.name:upper().." Connected!]")
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKeempat("Connected!")
-        sleep(math.random(100,200))
-    end
-end
-
-function reconnectToPos(x,y)
-    if getTile(bot.x,bot.y).fg ~= 6 then
-        if x and y and (bot.x ~= x or bot.y ~= y) then
-            bot:findPath(x,y)
-            sleep(math.random(100,200))
-        end
-    end
-end
-
-function Keluar()
-    while bot:getWorld().name ~= "EXIT" do
-        bot:sendPacket(3,"action|join_request\nname|EXIT\ninvitedWorld|0")
-        sleep(math.random(500,1000))
-    end
-end
-
-function AmbilPickaxe()
-    bot.auto_collect = false
-    sleep(math.random(100,200))
-    Warp(worldPickaxeIni, doorPickaxeIni)
-    sleep(math.random(100,200))
-        
-    while bot:getInventory():findItem(pickaxeID) == 0 do
-        for _,obj in pairs(bot:getWorld():getObjects()) do
-            if obj.id == pickaxeID then
-                bot:findPath(math.floor(obj.x / 32),math.floor(obj.y / 32))
-                sleep(math.random(100,200))
-                bot:collect(3)
-                sleep(math.random(100,200))
-            end
-            if bot:getInventory():findItem(pickaxeID) > 0 then
-                break
-            end
-        end
-        sleep(math.random(250,500))
-    end
-    bot:moveTo(-1,0)
-    sleep(math.random(100,200))
-    bot:setDirection(false)
-    sleep(math.random(100,200))
-    while bot:getInventory():findItem(pickaxeID) > 1 do
-        bot:sendPacket(2,"action|drop\n|itemID|".. pickaxeID .."")
-        sleep(math.random(250,500))
-        bot:sendPacket(2,"action|dialog_return\ndialog_name|drop_item\nitemID|".. pickaxeID .."|\ncount|"..(bot:getInventory():findItem(pickaxeID) - 1))
-        sleep(math.random(250,500))
-    end
-    bot:wear(pickaxeID)
-
-    print("[Lukman Script] ["..bot.name:upper().." Taking Pickaxe]")
-    sleep(math.random(100,200))
-    WebhookPertama()
-    sleep(math.random(100,200))
-    WebhookKetiga("Taking Pickaxe")
-    sleep(math.random(100,200))
-
-    Keluar()
-    sleep(math.random(100,200))
-    bot.auto_collect = true
-end
-
-function DropItems()
-    bot.auto_collect = false
-    bot.collect_interval = 60000
-    Warp(worldSeedIni, doorSeedIni)
-    if not NukeWorld and bot:isInWorld(worldSeedIni:upper()) then
-        print("[Lukman Script] ["..bot.name:upper().." Dropping Items]")
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKetiga("Dropping Items")
-        sleep(math.random(100,200))
-
-        ye = bot.y
-        for _, tile in pairs(getTiles()) do
-            if tile.y == ye and tile.x > bot.x and tileDrop(tile.x, tile.y, 200) then
-                bot:findPath(tile.x-1, tile.y)
-                sleep(math.random(100,200))
-                bot:setDirection(false)
-                sleep(math.random(100,200))
-                if bot:isInTile(tile.x-1, tile.y) then
-                    for _, trash in pairs(TrashId) do
-                        if findItem(trash) > 0 then
-                            bot:fastDrop(trash, findItem(trash))
-                            sleep(math.random(250,500))
-                            ReconnectIni(worldSeedIni, doorSeedIni)
-                            reconnectToPos(tile.x-1,tile.y)
-                            while findItem(trash) > 0 and #bot:getPath(bot.x+1, bot.y) > 0 do
-                                bot:moveRight()
-                                sleep(math.random(100,200))
-                                bot:fastDrop(trash, findItem(trash))
-                                sleep(math.random(250,500))
-                                ReconnectIni(worldSeedIni, doorSeedIni)
-                            end
-                        end
-                    end
-                end
-                break
-            end
-        end
-    end
-    bot.collect_interval = 100
-end
-
-function takeItem(itemID, amount, worldName, doorID)
-    bot.auto_collect = false
-    bot.collect_interval = 100
-    Warp(worldName, doorID)
-    if not NukeWorld and bot:isInWorld(worldName:upper()) then
-        print("[Lukman Script] "..bot.name:upper().." Taking "..getInfo(itemID).name)
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKetiga("Taking "..getInfo(itemID).name)
-        for _, obj in pairs(getObjects()) do
-            ReconnectIni(worldName, doorID)
-            if obj.id == itemID then
-                if #bot:getPath(math.floor(obj.x / 32),math.floor(obj.y / 32)) > 0 then
-                    bot:findPath(math.floor(obj.x / 32),math.floor(obj.y / 32))
-                    sleep(math.random(100,200))
-                end
-                bot:collectObject(obj.oid, 4)
-                sleep(math.random(250,500))
-                ReconnectIni(worldName, doorID)
-            end
-            if findItem(itemID) >= amount then
-                break
-            end
-        end
-    
-        while findItem(itemID) > amount and getTile(bot.x+1, bot.y).fg == 0 do
-            bot:setDirection(false)
-            bot:drop(itemID, findItem(itemID)-amount)
-            sleep(math.random(250,500))
-            if findItem(itemID) > amount and getTile(bot.x+1, bot.y).fg == 0 then
-                bot:moveRight()
-                sleep(math.random(100,200))
-            end
-            ReconnectIni(worldName, doorID)
-        end
-
-        if not IniIsiDirt then
-            if findItem(itemID) < amount then
-                print("[Lukman Script] "..bot.name:upper().." Finding "..getInfo(itemID).name)
-                sleep(math.random(100,200))
-                WebhookPertama()
-                sleep(math.random(100,200))
-                WebhookKetiga("Finding "..getInfo(itemID).name)
-            end
-        end
-        
-    end
-end
-
-function checkTrash()
-    for _, trash in pairs(TrashId) do
-        if findItem(trash) > 150 then
+function includesNumber(table, num)
+    for _,n in pairs(table) do
+        if n == num then
             return true
         end
     end
     return false
 end
 
-function trashJunk()
-    if checkTrash() then
-        if SavingSeed:upper() == "TRUE" then
-            DropItems()
-        else
-            for _, trash in pairs(TrashId) do
-                bot:fastTrash(trash, findItem(trash))
-                sleep(math.random(250,500))
+function clear(world)
+    for _,item in pairs(bot:getInventory():getItems()) do
+        if not includesNumber(DontTrash, item.id) then
+            if findItem(item.id) >= 50 then
+                bot:trash(item.id,item.count)
+                sleep(500)
+            end
+        end
+    end
+    for i = 2,3 do
+        if bot:getInventory():findItem(i) == 200 then
+            bot:trash(i,10)
+            sleep(200)
+        end
+    end
+end
+
+function round(n)
+    return n % 1 > 0.5 and math.ceil(n) or math.floor(n)
+end
+
+function clear2()
+    for _,item in pairs(bot:getInventory():getItems()) do
+        if not includesNumber(DontTrash, item.id) then
+            bot:trash(item.id,item.count)
+            sleep(500)
+        end
+    end
+end
+
+function dirtFarm(world)
+    join(world,doorFarm)
+    sleep(100)
+    breakDirt(world)
+    sleep(100)
+    placeDirt(world)
+    sleep(100)
+    clearFarm(world)
+    sleep(100)
+    clear2()
+    sleep(100)
+end
+
+function breakDirt(world)
+    bot.auto_collect = true
+    bot.collect_range = 3
+    --Break Kiri
+    for _,tile in pairs(bot:getWorld():getTiles()) do
+        if tile.x == 0 and tile.y <= 53 and getTile(tile.x,tile.y).bg ~= 0 then
+            bot:findPath(tile.x,tile.y - 1)
+            while getTile(tile.x,tile.y).bg ~= 0 do
+                punch(0,1)
+                sleep(160)
+                reconnect(world,doorFarm,tile.x,tile.y - 1)
+            end
+        end
+    end
+    -- Break Kanan
+    for _,tile in pairs(bot:getWorld():getTiles()) do
+        if tile.x == 99 and tile.y <= 53 and getTile(tile.x,tile.y).bg ~= 0 then
+            bot:findPath(tile.x,tile.y - 1)
+            while getTile(tile.x,tile.y).bg ~= 0 do
+                punch(0,1)
+                sleep(160)
+                reconnect(world,doorFarm,tile.x,tile.y - 1)
+            end
+        end
+    end
+    -- Break Dirt Farm
+    for _,tile in pairs(bot:getWorld():getTiles()) do
+        if tile.y % 2 == 1 and tile.y <= 53 and getTile(tile.x,tile.y).bg ~= 0 then
+            bot:findPath(tile.x - 1,tile.y)
+            while getTile(tile.x,tile.y).bg ~= 0 do
+                punch(1,0)
+                sleep(160)
+                reconnect(world,doorFarm,tile.x - 1,tile.y)
+            end
+        end
+        clear(world)
+    end
+    -- Break Lava
+    for _,tile in pairs(bot:getWorld():getTiles()) do
+        if getTile(tile.x,tile.y).fg == 4 then
+            bot:findPath(tile.x,tile.y - 1)
+            while getTile(tile.x,tile.y).fg == 4 do
+                punch(0,1)
+                sleep(160)
+                reconnect(world,doorFarm,tile.x,tile.y - 1)
             end
         end
     end
 end
 
-function BersihinPinggir()
-    Warp(WorldDfIni, DoorDfIni)
-    if not NukeWorld and bot:isInWorld(WorldDfIni:upper()) then
-
-        if AutoSkin:upper() == "TRUE" then
-            bot:setSkin(math.random(3,7))
-            sleep(math.random(100,200))
-        end
-
-        print("[Lukman Script] ["..bot.name:upper().." Clearing World]")
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKetiga("Clearing World")
-        sleep(math.random(100,200))
-
-        bot.auto_collect = true
-        bot.collect_interval = 100
-
-        for ye = 24, 53 do
-            ReconnectIni(WorldDfIni, DoorDfIni)
-            for _, ex in pairs(botSideX) do
-                ReconnectIni(WorldDfIni, DoorDfIni)
-                if getTile(ex, ye).fg ~= PlatformItemId then
-                    if getTile(ex, ye).fg ~= 0 or getTile(ex, ye).bg ~= 0 and hasAccess(ex, ye) and bot:getWorld().name == WorldDfIni:upper() then
-                        
-                        if SprintBot:upper() == "TRUE" then
-                            if #bot:getPath(ex, ye-1) > 5 then
-                                bot:findPath(ex, ye-1)
-                            else
-                                bot:moveTile(ex, ye-1)
-                                sleep(math.random(50,100))
-                            end
-                        else
-                            bot:findPath(ex, ye-1)
-                        end
-    
-                        if bot:isInTile(ex, ye-1) then
-                            for _, i in pairs(Break1Distance) do
-                                if getTile(bot.x, bot.y+i).fg ~= 8 then
-                                    while getTile(bot.x, bot.y+i).fg ~= 0 or getTile(bot.x, bot.y+i).bg ~= 0 and hasAccess(bot.x, bot.y+i) > 0 and bot:isInTile(ex, ye-1) do
-                                        bot:hit(bot.x, bot.y+i)
-                                        sleep(DelayPunch)
-                                        ReconnectIni(WorldDfIni, DoorDfIni)
-                                        reconnectToPos(ex, ye-1)
-                                    end
-                                end
-                            end
-                        end
-
-                        trashJunk()
-                        if bot:getWorld().name ~= WorldDfIni:upper() then
-                            Warp(WorldDfIni, DoorDfIni)
-                            bot.auto_collect = true
-                            bot.collect_interval = 100
-                        end
-
-                    end
+function farmDirt(world)
+    for _,tile in pairs(bot:getWorld():getTiles()) do
+        if tile.x >= 3 and tile.x <= 23 and ((tile.y == 25 and not multipleBot) or tile.y == (25 + 2 * indexBot)) then
+            if getTile(tile.x, tile.y):canHarvest() or getTile(tile.x, tile.y).fg == 0 then
+                bot:findPath(tile.x,tile.y)
+                while getTile(tile.x,tile.y):canHarvest() do
+                    punch(0,0)
+                    sleep(160)
+                    reconnect(world,doorFarm,tile.x,tile.y)
+                end
+                while getTile(tile.x,tile.y).fg == 0 and findItem(3) > 0 do
+                    place(3,0,0)
+                    sleep(110)
+                    reconnect(world,doorFarm,tile.x,tile.y)
                 end
             end
-        end
-
-        if not MultiBots:upper() == "TRUE" then
-            for ye = 24, 53 do
-                ReconnectIni(WorldDfIni, DoorDfIni)
-                for _, ex in pairs(botSideX2) do
-                    ReconnectIni(WorldDfIni, DoorDfIni)
-                    if getTile(ex, ye).fg ~= PlatformItemId then
-                        if getTile(ex, ye).fg ~= 0 or getTile(ex, ye).bg ~= 0 and hasAccess(ex, ye) and bot:getWorld().name == WorldDfIni:upper() then
-                            
-                            if SprintBot:upper() == "TRUE" then
-                                if #bot:getPath(ex, ye-1) > 5 then
-                                    bot:findPath(ex, ye-1)
-                                else
-                                    bot:moveTile(ex, ye-1)
-                                    sleep(math.random(50,100))
-                                end
-                            else
-                                bot:findPath(ex, ye-1)
-                            end
-        
-                            if bot:isInTile(ex, ye-1) then
-                                for _, i in pairs(Break1Distance) do
-                                    if getTile(bot.x, bot.y+i).fg ~= 8 then
-                                        while getTile(bot.x, bot.y+i).fg ~= 0 or getTile(bot.x, bot.y+i).bg ~= 0 and hasAccess(bot.x, bot.y+i) > 0 and bot:isInTile(ex, ye-1) do
-                                            bot:hit(bot.x, bot.y+i)
-                                            sleep(DelayPunch)
-                                            ReconnectIni(WorldDfIni, DoorDfIni)
-                                            reconnectToPos(ex, ye-1)
-                                        end
-                                    end
-                                end
-                            end
-                            
-                        end
-                    end
-                end
-            end
-        end
-
-    end
-end
-
-function BersihinTengah()
-    local webhuk = false
-    Warp(WorldDfIni, DoorDfIni)
-    if not NukeWorld and bot:isInWorld(WorldDfIni:upper()) then
-
-        if AutoSkin:upper() == "TRUE" then
-            bot:setSkin(math.random(3,7))
-            sleep(math.random(100,200))
-        end
-
-        bot.auto_collect = true
-        bot.collect_interval = 100
-        for _, ye in pairs(BotTileY[NumBot]) do
-            print("[Lukman Script] ["..bot.name:upper().." Clearing World]")
-            sleep(math.random(100,200))
-            WebhookPertama()
-            sleep(math.random(100,200))
-            WebhookKetiga("Clearing World")
-            sleep(math.random(100,200))
-
-            ReconnectIni(WorldDfIni, DoorDfIni)
-            for ex = 1, 99 do
-                ReconnectIni(WorldDfIni, DoorDfIni)
-                if getTile(ex, ye).fg %2 == 0 then
-                    if getTile(ex, ye).fg ~= 0 or getTile(ex, ye).bg ~= 0 and hasAccess(ex, ye) > 0 and bot:getWorld().name == WorldDfIni:upper() then
-                        webhuk = true
-                        while getTile(ex-1, ye).fg ~= 0 do
-                            sleep(math.random(1000,2000))
-                        end
-
-                        if SprintBot:upper() == "TRUE" then
-                            if #bot:getPath(ex-1, ye) > 5 then
-                                bot:findPath(ex-1, ye)
-                            else
-                                bot:moveTile(ex-1, ye)
-                                sleep(math.random(50,100))
-                            end
-                        else
-                            bot:findPath(ex-1, ye)
-                        end
-    
-                        if bot:isInTile(ex-1, ye) then
-                            for _, i in pairs(Break1Distance) do
-                                if bot:getWorld():isValidPosition((bot.x+i)*32, bot.y*32) then
-                                    while getTile(bot.x+i, bot.y).fg ~= 0 or getTile(bot.x+i, bot.y).bg ~= 0 and bot:isInTile(ex-1, ye) and hasAccess(bot.x+i, bot.y) do
-                                        bot:hit(bot.x+i, bot.y)
-                                        sleep(DelayPunch)
-                                        ReconnectIni(WorldDfIni, DoorDfIni)
-                                        reconnectToPos(ex-1, ye)
-                                    end
-                                end
-                            end
-    
-                            if BreakRock:upper() == "TRUE" then
-                                for _, i in pairs(Break1Distance) do
-                                    if getTile(bot.x+i, bot.y-1).fg == 10 then
-                                        while getTile(bot.x+i, bot.y-1).fg ~= 0 and bot:isInTile(ex-1, ye) and hasAccess(bot.x+i, bot.y) do
-                                            bot:hit(bot.x+i, bot.y-1)
-                                            sleep(DelayPunch)
-                                            ReconnectIni(WorldDfIni, DoorDfIni)
-                                            reconnectToPos(ex-1, ye)
-                                        end
-                                    end
-                                end
-                            end
-                            
-                            if BreakLava:upper() == "TRUE" then
-                                for _, i in pairs(Break1Distance) do
-                                    if getTile(bot.x+i, bot.y-1).fg == 4 then
-                                        while getTile(bot.x+i, bot.y-1).fg ~= 0 and bot:isInTile(ex-1, ye) and hasAccess(bot.x+i, bot.y) do
-                                            bot:hit(bot.x+i, bot.y-1)
-                                            sleep(DelayPunch)
-                                            ReconnectIni(WorldDfIni, DoorDfIni)
-                                            reconnectToPos(ex-1, ye)
-                                        end
-                                    end
-                                end
-                            end
-                            
-                        end
-                        sleep(math.random(100,200))
-                    end
-                end
-            end
-            trashJunk()
-            if bot:getWorld().name ~= WorldDfIni:upper() then
-                Warp(WorldDfIni, DoorDfIni)
-                bot.auto_collect = true
-                bot.collect_interval = 100
-            end
-            if webhuk then
-                WebhookPertama()
+            if findItem(2) >= 100 then
+                break
             end
         end
     end
 end
 
-function isPlantable(x,y)
-    local tempTile = getTile(x,y + 1)
-    if not tempTile.fg then return false end
+function checkFloat(ids)
+    local countids = 0
+    for _, obj in pairs(bot:getWorld():getObjects()) do
+        if obj.id == ids then
+            countids = countids + obj.count
+        end
+    end
+    return countids
+end
+
+function takeSeed(world)
+    bot.auto_collect = false
+    sleep(100)
+    warp(storageSeed)
+    sleep(100)
+    join(storageSeed,doorSeed)
+    sleep(100)
+    while findItem(itmSeed) == 0 do
+        if checkFloat(itmSeed) < 1 then
+            removeBot(getBot().name)
+        end
+        for _,obj in pairs(bot:getWorld():getObjects()) do
+            if obj.id == itmSeed then
+                bot:findPath(round(obj.x / 32),math.floor(obj.y / 32))
+                sleep(1000)
+                bot:collect(2,100)
+                sleep(1000)
+            end
+            if findItem(itmSeed) > 0 then
+                break
+            end
+        end
+    end
+    warp(world)
+    sleep(100)
+    join(world,doorFarm)
+    sleep(100)
+    bot.auto_collect = true
+    bot.collect_range = 2
+    sleep(100)
+end
+
+function isPlantable(tile)
+    local tempTile = getTile(tile.x, tile.y + 1) -- get tile below
+    if not tempTile.fg then 
+        return false 
+    end
     local collision = getInfo(tempTile.fg).collision_type
-    return tempTile and ( collision == 1 or collision == 2 or collision == 4)
+    return tempTile and ( collision == 1 or collision == 2 )-- 1 = solid, 2 = platforms
 end
 
-function readyTreeScan()
-    local totalTree = 0
-    for _, ye in pairs(BotTileY[NumBot]) do
-        for ex = 78, 97 do
-            if getTile(ex, ye).fg == 3 and getTile(ex, ye):canHarvest() and hasAccess(ex, ye) > 0 then
-                totalTree = totalTree + 1
+function plant(world)
+    for _,tile in pairs(bot:getWorld():getTiles()) do
+        if findItem(itmSeed) == 0 then
+            takeSeed(world)
+            sleep(100)
+        end
+        if getTile(tile.x,tile.y - 1).fg == 0 and isPlantable(getTile(tile.x,tile.y - 1)) and (not multipleBot or ((tile.y) % (jmlBot)) == indexBot) then
+            findPath(tile.x,tile.y - 1)
+            while getTile(tile.x,tile.y - 1).fg == 0 do
+                place(itmSeed,0,0)
+                sleep(110)
+                reconnect(world,doorFarm,tile.x,tile.y - 1)
             end
         end
     end
-    return totalTree
-end
-
-function emptyTileScan()
-    local totalEmpty = 0
-    for _, ye in pairs(BotTileY[NumBot]) do
-        for ex = 78, 97 do
-            if getTile(ex, ye).fg == 0 and isPlantable(ex, ye) and hasAccess(ex, ye) > 0 then
-                totalEmpty = totalEmpty + 1
-            end
+    for _,tile in pairs(bot:getWorld():getTiles()) do
+        if findItem(itmSeed) == 0 then
+            takeSeed(world)
+            sleep(100)
         end
-    end
-    return totalEmpty
-end
-
-function harvestDirt()
-    if bot:isInWorld(WorldDfIni:upper()) then
-        print("[Lukman Script] ["..bot.name:upper().." Harvesting Dirt]")
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKetiga("Harvesting Dirt")
-        bot.auto_collect = true
-        bot.collect_interval = 100
-        for _, ye in pairs(BotTileY[NumBot]) do
-            ReconnectIni(WorldDfIni, DoorDfIni)
-            for ex = 78, 97 do
-                ReconnectIni(WorldDfIni, DoorDfIni)
-                if getTile(ex, ye):canHarvest() and getTile(ex, ye).fg == 3 and hasAccess(ex, ye) > 0 and findItem(2) < 190 then
-
-                    if SprintBot:upper() == "TRUE" then
-                        if #bot:getPath(ex, ye) > 5 then
-                            bot:findPath(ex, ye)
-                        else
-                            bot:moveTile(ex, ye)
-                            sleep(math.random(50,100))
-                        end
-                    else
-                        bot:findPath(ex, ye)
-                    end
-
-                    if bot:isInTile(ex, ye) then
-                        for _, m in pairs(Break1Distance) do
-                            while getTile(bot.x+m, bot.y).fg == 3 and getTile(bot.x+m, bot.y):canHarvest() and hasAccess(bot.x+m, bot.y) > 0 do
-                                bot:hit(bot.x+m, bot.y)
-                                sleep(DelayHarvest)
-                                ReconnectIni(WorldDfIni, DoorDfIni)
-                                reconnectToPos(ex, ye)
-                            end
-                        end
-                    end
-                end
+        if getTile(tile.x,tile.y - 1).fg == 0 and isPlantable(getTile(tile.x,tile.y - 1)) then
+            findPath(tile.x,tile.y - 1)
+            while getTile(tile.x,tile.y - 1).fg == 0 and getTile(tile.x,tile.y).flags ~= 0 do
+                place(itmSeed,0,0)
+                sleep(110)
+                reconnect(world,doorFarm,tile.x,tile.y - 1)
             end
         end
     end
 end
 
-function plantDirt()
-    if findItem(3) < 50 and SavingSeed:upper() == "TRUE" then
-        takeItem(3, 75, worldSeedIni, doorSeedIni)
-        Warp(WorldDfIni, DoorDfIni)
-        if NukeWorld then
-            print("[Lukman Script] "..bot.name:upper().." Can't Join World Nuked, World = "..worldIni:upper())
-            sleep(math.random(100,200))
-            WebhookPertama()
-            sleep(math.random(100,200))
-            WebhookKeempat("Can't Join World, "..worldIni:upper().." Is Nuked")
-            bot:stopScript()
+function clearFarm(world)
+    for _,tile in pairs(bot:getWorld():getTiles()) do
+        if tile.fg == 3 then
+            findPath(tile.x,tile.y)
+            while getTile(tile.x,tile.y).fg == 3 do
+                punch(0,0)
+                sleep(160)
+                reconnect(world,doorFarm,tile.x,tile.y)
+            end
+            clear(world)
         end
     end
-    if bot:isInWorld(WorldDfIni:upper()) then
-        print("[Lukman Script] ["..bot.name:upper().." Planting Dirt]")
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKetiga("Planting Dirt")
-        for _, ye in pairs(BotTileY[NumBot]) do
-            ReconnectIni(WorldDfIni, DoorDfIni)
-            for ex = 78, 97 do
-                ReconnectIni(WorldDfIni, DoorDfIni)
-                if getTile(ex, ye).fg == 0 and isPlantable(ex, ye) and hasAccess(ex, ye) > 0 and findItem(3) > 0 then
+end
 
-                    if SprintBot:upper() == "TRUE" then
-                        if #bot:getPath(ex, ye) > 5 then
-                            bot:findPath(ex, ye)
-                        else
-                            bot:moveTile(ex, ye)
-                            sleep(math.random(50,100))
-                        end
-                    else
-                        bot:findPath(ex, ye)
-                    end
-
-                    if bot:isInTile(ex, ye) then
-                        for _, m in pairs(Break1Distance) do
-                            while getTile(bot.x+m, bot.y).fg == 0 and isPlantable(ex, ye) and hasAccess(bot.x+m, bot.y) > 0 and findItem(3) > 0 and getTile(bot.x+m, bot.y).x < 97 do
-                                bot:place(bot.x+m, bot.y, 3)
-                                sleep(DelayPlant)
-                                ReconnectIni(WorldDfIni, DoorDfIni)
-                                reconnectToPos(ex, ye)
-                            end
-                        end
-                    end
-                end
+function placeDirt(world)
+    for _,tile in pairs(bot:getWorld():getTiles()) do
+        while bot:getInventory():findItem(2) == 0 and tile.y % 2 == 0 and getTile(tile.x,tile.y).fg == 0 and tile.x > 0 and tile.x < 99 and tile.y <= 53 and tile.y > 0 do
+            farmDirt(world)
+            sleep(1000)
+        end
+        if tile.y % 2 == 0 and getTile(tile.x,tile.y).fg == 0 and tile.x > 0 and tile.x < 99 and tile.y <= 53 and tile.y > 0 then
+            bot:findPath(tile.x,tile.y - 1)
+            while getTile(tile.x,tile.y).fg == 0 do
+                place(2,0,1)
+                sleep(110)
+                reconnect(world,doorFarm,tile.x,tile.y - 1)
             end
         end
     end
 end
 
-function farmDirt()
-    Warp(WorldDfIni, DoorDfIni)
-    if not NukeWorld and bot:isInWorld(WorldDfIni:upper()) then
-        WebhookPertama()
-        bot.auto_collect = true
-        bot.collect_interval = 100
-        
-        if readyTreeScan() > 0 then
-            harvestDirt()
-        else
-            plantDirt()
-            while readyTreeScan() == 0 do
-                sleep(15000)
-            end
-            harvestDirt()
+function ReadFile(filename)
+    data = {} 
+    file = io.open(filename, "r")
+    for line in file:lines() do
+        world, id = line:match("([^:]+):([^:]+)")
+        if world and id then
+            table.insert(data, {world = world, id = id})
         end
-        
     end
+    file:close()
+    return data
 end
 
-function IsiDirt()
-    if TakePlatform:upper() == "TRUE" then
-        IsiDirtX1, IsiDirtX2 = 2, 97
-    else
-        IsiDirtX1, IsiDirtX2 = 1, 98
-    end
-
-    if findItem(2) < 200 and SavingSeed:upper() == "TRUE" then
-        IniIsiDirt = true
-        takeItem(2, 200, worldSeedIni, doorSeedIni)
-        IniIsiDirt = false
-    end
-
-    Warp(WorldDfIni, DoorDfIni)
-    if not NukeWorld and bot:isInWorld(WorldDfIni:upper()) then
-
-        if AutoSkin:upper() == "TRUE" then
-            bot:setSkin(math.random(3,7))
-            sleep(math.random(100,200))
-        end
-
-        print("[Lukman Script] ["..bot.name:upper().." Fill Dirt]")
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKetiga("Fill Dirt")
-        sleep(math.random(100,200))
-
-        bot.auto_collect = true
-        bot.collect_interval = 100
-        for _, ye in pairs(BotTileY[NumBot]) do
-            ReconnectIni(WorldDfIni, DoorDfIni)
-            for ex = IsiDirtX1, IsiDirtX2 do
-                ReconnectIni(WorldDfIni, DoorDfIni)
-                if getTile(ex, ye-1).fg == 0 and hasAccess(ex, ye-1) then
-                    if findItem(2) < 1 then
-                        farmDirt()
-                    end
-
-                    if SprintBot:upper() == "TRUE" then
-                        if #bot:getPath(ex, ye) > 5 then
-                            bot:findPath(ex, ye)
-                        else
-                            bot:moveTile(ex, ye)
-                            sleep(math.random(50,100))
-                        end
-                    else
-                        bot:findPath(ex, ye)
-                    end
-
-                    if bot:isInTile(ex, ye) then
-                        while getTile(bot.x, bot.y-1).fg == 0 and findItem(2) > 0 and hasAccess(bot.x, bot.y-1) do
-                            bot:place(bot.x, bot.y-1, 2)
-                            sleep(DelayPlace)
-                            ReconnectIni(WorldDfIni, DoorDfIni)
-                            reconnectToPos(ex, ye)
-                        end
-                    end
-                    
-                end
-            end
-        end
-    end
+while bot.status ~= BotStatus.online do
+    sleep(1000)
 end
 
-function placePlat()
-    if MultiBots:upper() == "TRUE" then
-        while findItem(PlatformItemId) < 26 and PasangPlat do
-            takeItem(PlatformItemId, 26, worldPlatIni, doorPlatIni)
-        end
-    else
-        while findItem(PlatformItemId) < 52 and PasangPlat do
-            takeItem(PlatformItemId, 52, worldPlatIni, doorPlatIni)
-        end
-    end
-    Warp(WorldDfIni, DoorDfIni)
-    if not NukeWorld and bot:isInWorld(WorldDfIni:upper()) then
-        print("[Lukman Script] ["..bot.name:upper().." Placing Platform]")
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKetiga("Placing Platform")
-        if findItem(PlatformItemId) > 0 then
-            for _, ye in pairs(PlatY) do
-                ReconnectIni(WorldDfIni, DoorDfIni)
-                if getTile(botPlatX, ye).fg == 0 and hasAccess(botPlatX, ye) > 0 and findItem(PlatformItemId) > 0 then
-
-                    if SprintBot:upper() == "TRUE" then
-                        if #bot:getPath(botPlatX, ye-1) > 5 then
-                            bot:findPath(botPlatX, ye-1)
-                        else
-                            bot:moveTile(botPlatX, ye-1)
-                            sleep(math.random(50,100))
-                        end
-                    else
-                        bot:findPath(botPlatX, ye-1)
-                    end
-
-                    if bot:isInTile(botPlatX, ye-1) then
-                        while getTile(bot.x, bot.y+1).fg == 0 and hasAccess(bot.x, bot.y+1) > 0 and findItem(PlatformItemId) > 0 do
-                            bot:place(bot.x, bot.y+1, PlatformItemId)
-                            sleep(DelayPlace)
-                            ReconnectIni(WorldDfIni, DoorDfIni)
-                            reconnectToPos(botPlatX, ye-1)
-                        end
-                    end
-                end
-            end
-
-            if not MultiBots:upper() == "TRUE" then
-                for _, ye in pairs(PlatY) do
-                    ReconnectIni(WorldDfIni, DoorDfIni)
-                    if getTile(botPlatX2, ye).fg == 0 and hasAccess(botPlatX2, ye) > 0 and findItem(PlatformItemId) > 0 then
-
-                        if SprintBot:upper() == "TRUE" then
-                            if #bot:getPath(botPlatX2, ye-1) > 5 then
-                                bot:findPath(botPlatX2, ye-1)
-                            else
-                                bot:moveTile(botPlatX2, ye-1)
-                                sleep(math.random(50,100))
-                            end
-                        else
-                            bot:findPath(botPlatX2, ye-1)
-                        end
-
-                        if bot:isInTile(botPlatX2, ye-1) then
-                            while getTile(bot.x, bot.y+1).fg == 0 and hasAccess(bot.x, bot.y+1) > 0 and findItem(PlatformItemId) > 0 do
-                                bot:place(bot.x, bot.y+1, PlatformItemId)
-                                sleep(DelayPlace)
-                                ReconnectIni(WorldDfIni, DoorDfIni)
-                                reconnectToPos(botPlatX2, ye-1)
-                            end
-                        end
-                    end
-                end
-            end
-
+for j = startIndex, endIndex do
+    FarmData = ReadFile(WorldList)[j]
+    if FarmData then
+        nuked = false
+        fired = false
+        world = FarmData.world
+        doorFarm = FarmData.id
+        sleep(100)
+        warp(world)
+        sleep(100)
+        if not nuked and bot:isInWorld() then
+            dirtFarm(world)
+            sleep(100)
         end
     end
-end
-
-function PasangDirt()
-    local webhuk = false
-    if TakePlatform:upper() == "TRUE" then
-        PasangDirtX1, PasangDirtX2 = 2, 97
-    else
-        PasangDirtX1, PasangDirtX2 = 1, 98
-    end
-    Warp(WorldDfIni, DoorDfIni)
-    if not NukeWorld and bot:isInWorld(WorldDfIni:upper()) then
-
-        if AutoSkin:upper() == "TRUE" then
-            bot:setSkin(math.random(3,7))
-            sleep(math.random(100,200))
-        end
-
-        for _, ye in pairs(BotPlaceY[NumBot]) do
-            print("[Lukman Script] ["..bot.name:upper().." Placing Dirt]")
-            sleep(math.random(100,200))
-            WebhookPertama()
-            sleep(math.random(100,200))
-            WebhookKetiga("Placing Dirt")
-            sleep(math.random(100,200))
-
-            ReconnectIni(WorldDfIni, DoorDfIni)
-            for ex = PasangDirtX1, PasangDirtX2 do
-                ReconnectIni(WorldDfIni, DoorDfIni)
-                if getTile(ex, ye).fg == 0 and hasAccess(ex, ye) > 0 then
-                    if findItem(2) < 1 then
-                        farmDirt()
-                    end
-
-                    if SprintBot:upper() == "TRUE" then
-                        if #bot:getPath(ex, ye-1) > 5 then
-                            bot:findPath(ex, ye-1)
-                        else
-                            bot:moveTile(ex, ye-1)
-                            sleep(math.random(50,100))
-                        end
-                    else
-                        bot:findPath(ex, ye-1)
-                    end
-
-                    webhuk = true
-                    if bot:isInTile(ex, ye-1) then
-                        for _, m in pairs(Break1Distance) do
-                            while getTile(bot.x+m, bot.y+1).fg == 0 and hasAccess(bot.x+m, bot.y+1) > 0 and findItem(2) > 0 and getTile(bot.x+m, bot.y+1).x <= PasangDirtX2 do
-                                bot:place(bot.x+m, bot.y+1, 2)
-                                sleep(DelayPlace)
-                                ReconnectIni(WorldDfIni, DoorDfIni)
-                                reconnectToPos(ex, ye-1)
-                            end
-                        end
-                    end
-                    
-                end
-            end
-            if webhuk then
-                WebhookPertama()
-            end
-        end
-    end
-end
-
-function BersihinDirt()
-    Warp(WorldDfIni, DoorDfIni)
-    if not NukeWorld and bot:isInWorld(WorldDfIni:upper()) then
-
-        if AutoSkin:upper() == "TRUE" then
-            bot:setSkin(math.random(3,7))
-            sleep(math.random(100,200))
-        end
-
-        print("[Lukman Script] ["..bot.name:upper().." Clearing Dirt]")
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKetiga("Clearing Dirt")
-        sleep(math.random(100,200))
-
-        bot.auto_collect = true
-        bot.collect_interval = 100
-        for _, ye in pairs(BotTileY[NumBot]) do
-            ReconnectIni(WorldDfIni, DoorDfIni)
-            for ex = 78, 97 do
-                ReconnectIni(WorldDfIni, DoorDfIni)
-                if getTile(ex, ye):canHarvest() and getTile(ex, ye).fg == 3 and hasAccess(ex, ye) > 0 then
-                    if findItem(2) > 150 then
-                        bot:fastTrash(2, findItem(2))
-                        sleep(math.random(250,500))
-                    end
-
-                    if findItem(3) > 150 then
-                        bot:fastTrash(3, findItem(3))
-                        sleep(math.random(250,500))
-                    end
-
-                    if SprintBot:upper() == "TRUE" then
-                        if #bot:getPath(ex, ye) > 5 then
-                            bot:findPath(ex, ye)
-                        else
-                            bot:moveTile(ex, ye)
-                            sleep(math.random(50,100))
-                        end
-                    else
-                        bot:findPath(ex, ye)
-                    end
-                    
-                    if bot:isInTile(ex, ye) then
-                        for _, m in pairs(Break1Distance) do
-                            while getTile(bot.x+m, bot.y).fg == 3 and getTile(bot.x+m, bot.y):canHarvest() and hasAccess(bot.x+m, bot.y) > 0 do
-                                bot:hit(bot.x+m, bot.y)
-                                sleep(DelayHarvest)
-                                ReconnectIni(WorldDfIni, DoorDfIni)
-                                reconnectToPos(ex, ye)
-                            end
-                        end
-                    end
-                end
-            end
-        end
-        
-    end
-end
-
-function BersihinFloat()
-    Warp(WorldDfIni, DoorDfIni)
-    if not NukeWorld and bot:isInWorld(WorldDfIni:upper()) then
-
-        if AutoSkin:upper() == "TRUE" then
-            bot:setSkin(math.random(3,7))
-            sleep(math.random(100,200))
-        end
-        
-        print("[Lukman Script] ["..bot.name:upper().." Clearing Float]")
-        sleep(math.random(100,200))
-        WebhookPertama()
-        sleep(math.random(100,200))
-        WebhookKetiga("Clearing Float")
-        sleep(math.random(100,200))
-
-        bot.auto_collect = false
-        bot.collect_interval = 100
-        for _, obj in pairs(getObjects()) do
-            if #bot:getPath(math.floor(obj.x/32), math.floor(obj.y/32)) > 0 then
-                bot:findPath(math.floor(obj.x/32), math.floor(obj.y/32))
-                bot:collect(3)
-                sleep(math.random(250,500))
-                if findItem(obj.id) > 150 then
-                    bot:fastTrash(obj.id, findItem(obj.id))
-                    sleep(math.random(250,500))
-                end
-                ReconnectIni(WorldDfIni, DoorDfIni)
-            end
-        end
-        
-    end
-end
- 
-function Pokok()
-    startDf = os.time()
-    WaktuIni[WorldDfIni] = " **[** Process **]** **[** ? **]**"
-    WebhookPertama()
-
-    if bot:getInventory():findItem(pickaxeID) == 0 and TakePickaxe:upper() == "TRUE" then
-        AmbilPickaxe()
-        sleep(math.random(100,200))
-    end
-
-    BersihinPinggir()
-    sleep(math.random(100,200))
-
-    if PasangPlat and TakePlatform:upper() == "TRUE" then
-        placePlat()
-    end
-
-    BersihinTengah()
-    sleep(math.random(100,200))
-
-    IsiDirt()
-    sleep(math.random(100,200))
-
-    PasangDirt()
-    sleep(math.random(100,200))
-
-    BersihinDirt()
-    BersihinFloat()
-    sleep(math.random(100,200))
-    
-    elapsedTime = os.time() - startDf
-    WaktuIni[WorldDfIni] = " **[** Finished **]** **[** ".. math.floor(elapsedTime / 3600) .. ":".. math.floor((elapsedTime % 3600) / 60) ..":".. math.floor(elapsedTime % 60) .." **]**"
-    sleep(math.random(1000,2000))
-    WebhookPertama()
-    sleep(math.random(100,200))
 end
 
 function isLicenseValid()
@@ -1319,37 +366,6 @@ if isLicenseValid() then
     print("[Lukman Script] [Status : Success Login]")
     sleep(math.random(50,100))
     print("[Lukman Script] [Running Script Dirt Farm By Lukman]")
-
-function JalanIni()
-    if UseFIle:upper() == "TRUE" then
-        for _, world in pairs(read(WorldFile)) do
-            WorldDfIni, DoorDfIni = world:upper():match("([^|]+):([^|]+)")
-            Pokok()
-            sleep(math.random(100,200))
-        end
-    else
-        for _, list in pairs(listWorld) do
-            WorldDfIni, DoorDfIni = list:upper():match("([^|]+):([^|]+)")
-            Pokok()
-            sleep(math.random(100,200))
-        end
-    end
-
-    print("[Lukman Script] ["..bot.name:upper().." Dirt Farm Finish!]")
-    sleep(math.random(100,200))
-    WebhookPertama()
-    sleep(math.random(100,200))
-    WebhookKetiga("Dirt Farm Finish")
-    sleep(math.random(100,200))
-    Keluar()
-    sleep(math.random(100,200))
-    bot:stopScript()
-end
-
-while bot.status ~= BotStatus.online do
-    sleep(math.random(500,1000))
-end
-JalanIni()
 else
     print("[Lukman Script] [Status : Username Not Register!!!]")
     sleep(math.random(50,100))
