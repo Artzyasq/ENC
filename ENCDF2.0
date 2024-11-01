@@ -1,371 +1,251 @@
+PlatformCountNeeded = 52
 bot = getBot()
-bot.auto_trash = false
-nuked = false
+bot.move_range = MovementSpeed
+bot.collect_interval = 100
+bot.auto_reconnect = true
 
-for i, botz in pairs(getBots()) do
-    if botz.name:upper() == bot.name:upper() then
-        indexBot = i
-        startIndex = (i - 1) * WorldPerBot + 1
-        endIndex = startIndex + WorldPerBot - 1
-        sleep((indexBot - 1) * delayExecute)
-        break
-    end
+-- Fungsi untuk mendapatkan interval acak
+function randomInterval(min, max)
+    return math.random(min, max)
 end
 
-function punch(x,y)
-    return bot:hit(bot.x+x,bot.y+y)
-end
-
-function findItem(id)
-    return bot:getInventory():findItem(id)
-end
-
-function place(id,x,y)
-    return bot:place(bot.x+x,bot.y+y,id)
-end
-
-function findPath(x,y)
-    return bot:findPath(x,y)
-end
-
-function warp(worldName)
-    while not bot:isInWorld(worldName:upper()) do
-        while bot.status ~= BotStatus.online do
-            sleep(1000)
+-- Fungsi untuk memuat daftar dunia dari file teks
+function loadWorldList(filename)
+    local worldList = {}
+    local file = io.open(filename, "r")
+    if file then
+        for line in file:lines() do
+            table.insert(worldList, line)
         end
-        bot:warp(worldName)
-        sleep(delayWarp)
-    end
-end
-
-function join(worldName,id)
-    while bot:getWorld():getTile(bot.x,bot.y).fg == 6 do 
-        bot:sendPacket(3,"action|join_request\nname|"..worldName:upper().."|"..id:upper().."\ninvitedWorld|0")
-        sleep(1000)
-    end
-end
-
-function reconnect(world,id,x,y)
-    if bot.status ~= BotStatus.online then
-        while bot.status ~= BotStatus.online do
-            bot:connect()
-            sleep(8000)
-            if bot.status == BotStatus.account_banned then
-                bot.auto_reconnect = false
-                stopScript()
-            end
-        end
-        while not bot:isInWorld(world:upper()) do
-            bot:warp(world)
-            sleep(delayWarp)
-        end
-        if id then
-            while getTile(getBot().x,getBot().y).fg == 6 do
-                bot:warp(world,id)
-                sleep(delayWarp)
-            end
-        end
-        if x and y then
-            bot:findPath(x,y)
-            sleep(100)
-        end
-    end
-end
-
-function round(n)
-    return n % 1 > 0.5 and math.ceil(n) or math.floor(n)
-end
-
-function includesNumber(table, num)
-    for _,n in pairs(table) do
-        if n == num then
-            return true
-        end
-    end
-    return false
-end
-
-function clear(world)
-    for _,item in pairs(bot:getInventory():getItems()) do
-        if includesNumber(TrashItem, item.id) then
-            if findItem(item.id) >= 50 then
-                bot:trash(item.id,item.count)
-                sleep(500)
-            end
-        end
-    end
-    for i = 2,3 do
-        if bot:getInventory():findItem(i) == 200 then
-            bot:trash(i,10)
-            sleep(200)
-        end
-    end
-end
-
-function clear2()
-    for _,item in pairs(bot:getInventory():getItems()) do
-        if includesNumber(TrashItem, item.id) then
-            bot:trash(item.id,item.count)
-            sleep(500)
-        end
-    end
-end
-
-function dirtFarm(world)
-    join(world,doorFarm)
-    sleep(100)
-    breakDirt(world)
-    sleep(100)
-    placeDirt(world)
-    sleep(100)
-    clearFarm(world)
-    sleep(100)
-    clear2()
-    sleep(100)
-    
-    -- Pindahkan world yang sudah selesai
-    moveToWorldDone(world)
-end
-
-function moveToWorldDone(world)
-    local asal = "C:\\Users\\user\\Desktop\\" .. world .. ".txt"
-    local tujuan = "C:\\Users\\user\\Desktop\\WorldDone\\" .. world .. ".txt"
-    
-    if io.open(asal, "r") then
-        os.rename(asal, tujuan)  -- Memindahkan file ke folder WorldDone
-        print(world .. " telah dipindahkan ke WorldDone.")
+        file:close()
     else
-        print("World " .. world .. " tidak ditemukan.")
+        print("[ERROR] Tidak dapat membuka file: " .. filename)
+    end
+    return worldList
+end
+
+-- Fungsi untuk menyimpan world yang selesai dikerjakan
+function saveWorldDone(world)
+    local file = io.open(WORLDDONE_FILE, "a")
+    if file then
+        file:write(world .. "\n")
+        file:close()
+    else
+        print("[ERROR] Tidak dapat membuka file WorldDone.txt")
     end
 end
 
-function breakDirt(world)
-    bot.auto_collect = true
-    bot.collect_range = 3
-    --Break Kiri
-    for _,tile in pairs(bot:getWorld():getTiles()) do
-        if tile.x == 0 and tile.y <= 53 and getTile(tile.x,tile.y).bg ~= 0 then
-            bot:findPath(tile.x,tile.y - 1)
-            while getTile(tile.x,tile.y).bg ~= 0 do
-                punch(0,1)
-                sleep(160)
-                reconnect(world,doorFarm,tile.x,tile.y - 1)
+-- Fungsi untuk memperbarui file daftar world
+function updateWorldList(filename, completedWorld)
+    local lines = {}
+    local file = io.open(filename, "r")
+    if file then
+        for line in file:lines() do
+            if line ~= completedWorld then
+                table.insert(lines, line)
             end
         end
+        file:close()
     end
-    -- Break Kanan
-    for _,tile in pairs(bot:getWorld():getTiles()) do
-        if tile.x == 99 and tile.y <= 53 and getTile(tile.x,tile.y).bg ~= 0 then
-            bot:findPath(tile.x,tile.y - 1)
-            while getTile(tile.x,tile.y).bg ~= 0 do
-                punch(0,1)
-                sleep(160)
-                reconnect(world,doorFarm,tile.x,tile.y - 1)
-            end
+
+    file = io.open(filename, "w")
+    if file then
+        for _, line in ipairs(lines) do
+            file:write(line .. "\n")
         end
-    end
-    -- Break Dirt Farm
-    for _,tile in pairs(bot:getWorld():getTiles()) do
-        if tile.y % 2 == 1 and tile.y <= 53 and getTile(tile.x,tile.y).fg ~= 0 then
-            bot:findPath(tile.x - 1,tile.y)
-            while getTile(tile.x,tile.y).bg ~= 0 do
-                punch(1,0)
-                sleep(160)
-                reconnect(world,doorFarm,tile.x - 1,tile.y)
-            end
-        end
-        clear(world)
-    end
-    -- Break Lava
-    for _,tile in pairs(bot:getWorld():getTiles()) do
-        if getTile(tile.x,tile.y).fg == 4 then
-            bot:findPath(tile.x,tile.y - 1)
-            while getTile(tile.x,tile.y).fg == 4 do
-                punch(0,1)
-                sleep(160)
-                reconnect(world,doorFarm,tile.x,tile.y - 1)
-            end
-        end
+        file:close()
     end
 end
 
+-- Fungsi untuk warp ke dunia dan pintu yang ditentukan
+function warp(world, door)
+    bot:warp(world, door)
+    sleep(WarpDelay + randomInterval(MinDelay, MaxDelay))
+end
 
-function placeDirt(world)
-    for _,tile in pairs(bot:getWorld():getTiles()) do
-        while bot:getInventory():findItem(2) == 0 and tile.y % 2 == 0 and getTile(tile.x,tile.y).fg == 0 and tile.x > 0 and tile.x < 99 and tile.y <= 53 and tile.y > 0 do
-            farmDirt(world)
-            sleep(1000)
-        end
-        if tile.y % 2 == 0 and getTile(tile.x,tile.y).fg == 0 and tile.x > 0 and tile.x < 99 and tile.y <= 53 and tile.y > 0 then
-            bot:findPath(tile.x,tile.y - 1)
-            while getTile(tile.x,tile.y).fg == 0 do
-                place(2,0,1)
-                sleep(110)
-                reconnect(world,doorFarm,tile.x,tile.y - 1)
+-- Fungsi untuk mengambil pickaxe dan memastikan hanya menyimpan 1
+function retrievePickaxe()
+    warp(PickaxeStorageWorld, PickaxeStorageDoor)
+    sleep(randomInterval(MinDelay, MaxDelay))
+
+    local pickaxeCount = bot:getItemCount(PickaxeID)
+    if pickaxeCount == 0 then
+        for _, obj in pairs(bot:getObjects()) do
+            if obj.id == PickaxeID then
+                bot:findPath(math.floor(obj.x / 32), math.floor(obj.y / 32))
+                bot:collect(obj.oid)
+                sleep(randomInterval(MinDelay, MaxDelay))
             end
         end
+    end
+
+    while bot:getItemCount(PickaxeID) > 1 do
+        bot:drop(PickaxeID, bot:getItemCount(PickaxeID) - 1)
+        print("[INFO] Men-drop pickaxe tambahan, hanya menyimpan 1.")
+        sleep(randomInterval(MinDelay, MaxDelay))
+    end
+
+    if bot:getItemCount(PickaxeID) == 1 then
+        print("[INFO] Pickaxe berhasil diambil dan hanya 1 yang tersisa.")
+    else
+        print("[WARNING] Gagal mengatur jumlah pickaxe, periksa kembali!")
     end
 end
 
-function farmDirt(world)
-    for _,tile in pairs(bot:getWorld():getTiles()) do
-        if tile.x >= 3 and tile.x <= 23 and ((tile.y == 25 and not multipleBot) or tile.y == (25 + 2 * indexBot)) then
-            if getTile(tile.x, tile.y):canHarvest() or getTile(tile.x, tile.y).fg == 0 then
-                bot:findPath(tile.x,tile.y)
-                while getTile(tile.x,tile.y):canHarvest() do
-                    punch(0,0)
-                    sleep(160)
-                    reconnect(world,doorFarm,tile.x,tile.y)
-                end
-                while getTile(tile.x,tile.y).fg == 0 and findItem(3) > 0 do
-                    place(3,0,0)
-                    sleep(110)
-                    reconnect(world,doorFarm,tile.x,tile.y)
-                end
-            end
-            if findItem(2) >= 100 then
-                break
+-- Fungsi untuk mengambil platform dari world penyimpanan
+function retrievePlatform()
+    warp(PlatformStorageWorld, PlatformStorageDoor)
+    sleep(randomInterval(MinDelay, MaxDelay))
+
+    local platformCount = bot:getItemCount(PlatformID)
+    if platformCount < PlatformCountNeeded then
+        for _, obj in pairs(bot:getObjects()) do
+            if obj.id == PlatformID then
+                bot:findPath(math.floor(obj.x / 32), math.floor(obj.y / 32))
+                bot:collect(obj.oid)
+                sleep(randomInterval(MinDelay, MaxDelay))
             end
         end
+    end
+
+    while bot:getItemCount(PlatformID) > PlatformCountNeeded do
+        bot:drop(PlatformID, bot:getItemCount(PlatformID) - PlatformCountNeeded)
+        print("[INFO] Men-drop platform tambahan, menyimpan yang dibutuhkan saja.")
+        sleep(randomInterval(MinDelay, MaxDelay))
+    end
+
+    if bot:getItemCount(PlatformID) >= PlatformCountNeeded then
+        print("[INFO] Platform berhasil diambil.")
+    else
+        print("[WARNING] Gagal mengambil platform, periksa kembali!")
     end
 end
 
-function takeSeed(world)
-    bot.auto_collect = false
-    sleep(100)
-    warp(storageSeed)
-    sleep(100)
-    join(storageSeed,doorSeed)
-    sleep(100)
-    while findItem(itmSeed) == 0 do
-        if checkFloat(itmSeed) < 1 then
-            removeBot(getBot().name)
-        end
-        for _,obj in pairs(bot:getWorld():getObjects()) do
-            if obj.id == itmSeed then
-                bot:findPath(round(obj.x / 32),math.floor(obj.y / 32))
-                sleep(1000)
-                bot:collect(2,100)
-                sleep(1000)
-            end
-            if findItem(itmSeed) > 0 then
-                break
-            end
-        end
-    end
-    warp(world)
-    sleep(100)
-    join(world,doorFarm)
-    sleep(100)
-    bot.auto_collect = true
-    bot.collect_range = 2
-    sleep(100)
-end
+-- Fungsi untuk menempatkan platform di sisi kiri dan kanan dari setiap baris
+function placePlatformSides(world, door, botIndex)
+    local startY, endY = getBotArea(botIndex)
+    warp(world, door)
 
-function plant(world)
-    for _,tile in pairs(bot:getWorld():getTiles()) do
-        if findItem(itmSeed) == 0 then
-            takeSeed(world)
-            sleep(100)
+    for y = startY, endY, 2 do
+        if getTile(1, y).fg == 0 then
+            bot:findPath(1, y)
+            bot:place(1, y, PlatformID)
+            sleep(PlaceDelay + randomInterval(MinDelay, MaxDelay))
         end
-        if getTile(tile.x,tile.y - 1).fg == 0 and isPlantable(getTile(tile.x,tile.y - 1)) and (not multipleBot or ((tile.y) % (jmlBot)) == indexBot) then
-            findPath(tile.x,tile.y - 1)
-            while getTile(tile.x,tile.y - 1).fg == 0 do
-                place(itmSeed,0,0)
-                sleep(110)
-                reconnect(world,doorFarm,tile.x,tile.y - 1)
-            end
-        end
-    end
-    for _,tile in pairs(bot:getWorld():getTiles()) do
-        if findItem(itmSeed) == 0 then
-            takeSeed(world)
-            sleep(100)
-        end
-        if getTile(tile.x,tile.y - 1).fg == 0 and isPlantable(getTile(tile.x,tile.y - 1)) then
-            findPath(tile.x,tile.y - 1)
-            while getTile(tile.x,tile.y - 1).fg == 0 and getTile(tile.x,tile.y).flags ~= 0 do
-                place(itmSeed,0,0)
-                sleep(110)
-                reconnect(world,doorFarm,tile.x,tile.y - 1)
-            end
+        if getTile(22, y).fg == 0 then
+            bot:findPath(22, y)
+            bot:place(22, y, PlatformID)
+            sleep(PlaceDelay + randomInterval(MinDelay, MaxDelay))
         end
     end
 end
 
-function clearFarm(world)
-    for _,tile in pairs(bot:getWorld():getTiles()) do
-        if tile.fg == 3 then
-            findPath(tile.x,tile.y)
-            while getTile(tile.x,tile.y).fg == 3 do
-                punch(0,0)
-                sleep(160)
-                reconnect(world,doorFarm,tile.x,tile.y)
-            end
-            clear(world)
-        end
-    end
+-- Fungsi untuk menentukan area kerja setiap bot
+function getBotArea(botIndex)
+    local totalRows = 53 - 25
+    local rowsPerBot = math.floor(totalRows / BotsPerWorld)
+    local startRow = 25 + (botIndex - 1) * rowsPerBot
+    local endRow = startRow + rowsPerBot - 1
+    return startRow, endRow
 end
 
-function ReadFile(filename)
-    data = {} 
-    file = io.open(filename, "r")
-    for line in file:lines() do
-        world, id = line:match("([^:]+):([^:]+)")
-        if world and id then
-            table.insert(data, {world = world, id = id})
-        end
-    end
-    file:close()
-    return data
-end
-
-while bot.status ~= BotStatus.online do
-    sleep(1000)
-end
-
-for j = startIndex, endIndex do
-    FarmData = ReadFile(farmList)[j]
-    if FarmData then
-        nuked = false
-        fired = false
-        world = FarmData.world
-        doorFarm = FarmData.id
-        sleep(100)
-        warp(world)
-        sleep(100)
-        if not nuked and bot:isInWorld() then
-            dirtFarm(world)
-            sleep(100)
-        end
-    end
-end
-
-function isLicenseValid()
-    local client = HttpClient.new()
-    client.method = Method.get
-    client.url = "https://raw.githubusercontent.com/Artzyasq/LICENSE-1/main/DF"
-    local licenses = load(client:request().body)()
-    for key, value in pairs(licenses) do
-        if value == getUsername() then
-            return true
-        end
+-- Fungsi untuk mengecek apakah tile bisa ditanami dirt
+function isPlantable(x, y)
+    local belowTile = getTile(x, y + 1)
+    if belowTile and (belowTile.fg ~= 0) then
+        return true
     end
     return false
 end
 
-print("[Lukman Script] [Username = " ..getUsername().."]")
-if isLicenseValid() then
-    print("[Lukman Script] [Status : Success Login]")
-    sleep(math.random(50,100))
-    print("[Lukman Script] [Running Script Dirt Farm By Lukman]")
-else
-    print("[Lukman Script] [Status : Username Not Register!!!]")
-    sleep(math.random(50,100))
-    print("[Lukman Script] [Contact Cema Store For Register]")
-    messageBox = MessageBox.new()
-    messageBox.title = "Lukman Store"
-    messageBox.description = "Silahkan Register Hubungin Admin"
-    messageBox:send()
-    sleep(math.random(100,200))
+-- Fungsi untuk membersihkan dunia berdasarkan area bot
+function clearWorld(world, door, botIndex)
+    local startY, endY = getBotArea(botIndex)
+    warp(world, door)
+    bot.auto_collect = true
+    bot.collect_interval = 100
+    for y = startY, endY, 2 do
+        for x = 1, 99 do
+            local tile = getTile(x, y)
+            if tile.fg ~= 0 then
+                if BreakRock and tile.fg == 10 then
+                    break3Way(x, y)
+                end
+
+                if BreakLava and tile.fg == 4 then
+                    break3Way(x, y)
+                end
+
+                break3Way(x, y)
+            end
+        end
+    end
+    trashItems()
 end
+
+-- Fungsi untuk menanam dirt di area bot
+function plantDirt(world, door, botIndex)
+    local startY, endY = getBotArea(botIndex)
+    warp(world, door)
+    for y = startY, endY, 2 do
+        for x = 2, 22 do
+            if getTile(x, y).fg == 0 and isPlantable(x, y) then
+                bot:findPath(x, y)
+                bot:place(x, y, 2)
+                sleep(PlaceDelay + randomInterval(MinDelay, MaxDelay))
+            end
+        end
+    end
+    trashItems()
+end
+
+-- Fungsi untuk melakukan chat acak
+function randomChat()
+    local messages = {
+        "Halo semua!",
+        "Apa kabar?",
+        "Sedang melakukan farming!",
+        "Semoga hari kalian menyenangkan!",
+        "Butuh bantuan di sini!",
+        "Ada yang ingin diajukan?",
+        "Farming sambil ngobrol!",
+        "Selamat bermain!"
+    }
+
+    local randomIndex = math.random(1, #messages)
+    bot:chat(messages[randomIndex])
+    sleep(randomInterval(2000, 5000))  -- Delay acak setelah chat
+end
+
+-- Fungsi untuk memulai farming di world
+function startFarming(worldInfo)
+    local w, d = worldInfo:match("([^:]+):([^:]+)")
+    if w and d then
+        retrievePickaxe()
+        retrievePlatform()
+
+        print("Bot Username: " .. getUsername() .. " - Memulai proses di dunia " .. w .. " pada pintu " .. d)
+
+        for botIndex = 1, BotsPerWorld do
+            clearWorld(w, d, botIndex)
+            placePlatformSides(w, d, botIndex)
+            plantDirt(w, d, botIndex)
+
+            -- Mengirim chat acak setelah setiap siklus
+            randomChat()
+        end
+
+        saveWorldDone(worldInfo)
+        updateWorldList(FARMFILE, worldInfo)
+    else
+        print("[ERROR] Format world dan door tidak valid: " .. worldInfo)
+    end
+end
+
+-- Memuat daftar dunia dari file teks dan melakukan proses farming
+ListWorld = loadWorldList(FARMFILE)
+for _, worldInfo in pairs(ListWorld) do
+    startFarming(worldInfo)
+end
+
+print("[INFO] Proses selesai.")
