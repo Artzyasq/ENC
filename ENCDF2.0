@@ -87,7 +87,7 @@ end
 
 function clear(world)
     for _,item in pairs(bot:getInventory():getItems()) do
-        if not includesNumber(DontTrash, item.id) then
+        if includesNumber(TrashItem, item.id) then
             if findItem(item.id) >= 50 then
                 bot:trash(item.id,item.count)
                 sleep(500)
@@ -102,13 +102,9 @@ function clear(world)
     end
 end
 
-function round(n)
-    return n % 1 > 0.5 and math.ceil(n) or math.floor(n)
-end
-
 function clear2()
     for _,item in pairs(bot:getInventory():getItems()) do
-        if not includesNumber(DontTrash, item.id) then
+        if includesNumber(TrashItem, item.id) then
             bot:trash(item.id,item.count)
             sleep(500)
         end
@@ -126,6 +122,21 @@ function dirtFarm(world)
     sleep(100)
     clear2()
     sleep(100)
+    
+    -- Pindahkan world yang sudah selesai
+    moveToWorldDone(world)
+end
+
+function moveToWorldDone(world)
+    local asal = "C:\\Users\\user\\Desktop\\" .. world .. ".txt"
+    local tujuan = "C:\\Users\\user\\Desktop\\WorldDone\\" .. world .. ".txt"
+    
+    if io.open(asal, "r") then
+        os.rename(asal, tujuan)  -- Memindahkan file ke folder WorldDone
+        print(world .. " telah dipindahkan ke WorldDone.")
+    else
+        print("World " .. world .. " tidak ditemukan.")
+    end
 end
 
 function breakDirt(world)
@@ -155,7 +166,7 @@ function breakDirt(world)
     end
     -- Break Dirt Farm
     for _,tile in pairs(bot:getWorld():getTiles()) do
-        if tile.y % 2 == 1 and tile.y <= 53 and getTile(tile.x,tile.y).bg ~= 0 then
+        if tile.y % 2 == 1 and tile.y <= 53 and getTile(tile.x,tile.y).fg ~= 0 then
             bot:findPath(tile.x - 1,tile.y)
             while getTile(tile.x,tile.y).bg ~= 0 do
                 punch(1,0)
@@ -172,6 +183,24 @@ function breakDirt(world)
             while getTile(tile.x,tile.y).fg == 4 do
                 punch(0,1)
                 sleep(160)
+                reconnect(world,doorFarm,tile.x,tile.y - 1)
+            end
+        end
+    end
+end
+
+
+function placeDirt(world)
+    for _,tile in pairs(bot:getWorld():getTiles()) do
+        while bot:getInventory():findItem(2) == 0 and tile.y % 2 == 0 and getTile(tile.x,tile.y).fg == 0 and tile.x > 0 and tile.x < 99 and tile.y <= 53 and tile.y > 0 do
+            farmDirt(world)
+            sleep(1000)
+        end
+        if tile.y % 2 == 0 and getTile(tile.x,tile.y).fg == 0 and tile.x > 0 and tile.x < 99 and tile.y <= 53 and tile.y > 0 then
+            bot:findPath(tile.x,tile.y - 1)
+            while getTile(tile.x,tile.y).fg == 0 do
+                place(2,0,1)
+                sleep(110)
                 reconnect(world,doorFarm,tile.x,tile.y - 1)
             end
         end
@@ -199,16 +228,6 @@ function farmDirt(world)
             end
         end
     end
-end
-
-function checkFloat(ids)
-    local countids = 0
-    for _, obj in pairs(bot:getWorld():getObjects()) do
-        if obj.id == ids then
-            countids = countids + obj.count
-        end
-    end
-    return countids
 end
 
 function takeSeed(world)
@@ -241,15 +260,6 @@ function takeSeed(world)
     bot.auto_collect = true
     bot.collect_range = 2
     sleep(100)
-end
-
-function isPlantable(tile)
-    local tempTile = getTile(tile.x, tile.y + 1) -- get tile below
-    if not tempTile.fg then 
-        return false 
-    end
-    local collision = getInfo(tempTile.fg).collision_type
-    return tempTile and ( collision == 1 or collision == 2 )-- 1 = solid, 2 = platforms
 end
 
 function plant(world)
@@ -297,23 +307,6 @@ function clearFarm(world)
     end
 end
 
-function placeDirt(world)
-    for _,tile in pairs(bot:getWorld():getTiles()) do
-        while bot:getInventory():findItem(2) == 0 and tile.y % 2 == 0 and getTile(tile.x,tile.y).fg == 0 and tile.x > 0 and tile.x < 99 and tile.y <= 53 and tile.y > 0 do
-            farmDirt(world)
-            sleep(1000)
-        end
-        if tile.y % 2 == 0 and getTile(tile.x,tile.y).fg == 0 and tile.x > 0 and tile.x < 99 and tile.y <= 53 and tile.y > 0 then
-            bot:findPath(tile.x,tile.y - 1)
-            while getTile(tile.x,tile.y).fg == 0 do
-                place(2,0,1)
-                sleep(110)
-                reconnect(world,doorFarm,tile.x,tile.y - 1)
-            end
-        end
-    end
-end
-
 function ReadFile(filename)
     data = {} 
     file = io.open(filename, "r")
@@ -332,7 +325,7 @@ while bot.status ~= BotStatus.online do
 end
 
 for j = startIndex, endIndex do
-    FarmData = ReadFile(WorldList)[j]
+    FarmData = ReadFile(farmList)[j]
     if FarmData then
         nuked = false
         fired = false
