@@ -5,8 +5,8 @@ nuked = false
 for i, botz in pairs(getBots()) do
     if botz.name:upper() == bot.name:upper() then
         indexBot = i
-        startIndex = (i - 1) * WorldPerBot + 1
-        endIndex = startIndex + WorldPerBot - 1
+        startIndex = (i - 1) * farmPerBot + 1
+        endIndex = startIndex + farmPerBot - 1
         sleep((indexBot - 1) * delayExecute)
         break
     end
@@ -87,7 +87,7 @@ end
 
 function clear(world)
     for _,item in pairs(bot:getInventory():getItems()) do
-        if not includesNumber(DontTrash, item.id) then
+        if includesNumber(TrashItem, item.id) then
             if findItem(item.id) >= 50 then
                 bot:trash(item.id,item.count)
                 sleep(500)
@@ -108,7 +108,7 @@ end
 
 function clear2()
     for _,item in pairs(bot:getInventory():getItems()) do
-        if not includesNumber(DontTrash, item.id) then
+        if includesNumber(TrashItem, item.id) then
             bot:trash(item.id,item.count)
             sleep(500)
         end
@@ -327,12 +327,45 @@ function ReadFile(filename)
     return data
 end
 
+-- Fungsi baru untuk mencatat world yang sudah selesai
+function logCompletedWorld(world, id)
+    local file = io.open(completedFarmList, "a")
+    if file then
+        file:write(world .. ":" .. id .. "\n")
+        file:close()
+    end
+end
+
+-- Fungsi baru untuk memperbarui file farmList original
+function updateFarmList(fileName, worldToRemove)
+    local lines = {}
+    local file = io.open(fileName, "r")
+    if file then
+        for line in file:lines() do
+            local world = line:match("([^:]+):")
+            if world ~= worldToRemove then
+                table.insert(lines, line)
+            end
+        end
+        file:close()
+    end
+    
+    file = io.open(fileName, "w")
+    if file then
+        for _, line in ipairs(lines) do
+            file:write(line .. "\n")
+        end
+        file:close()
+    end
+end
+
 while bot.status ~= BotStatus.online do
     sleep(1000)
 end
 
+-- Loop utama yang sudah dimodifikasi
 for j = startIndex, endIndex do
-    FarmData = ReadFile(WorldList)[j]
+    FarmData = ReadFile(farmList)[j]
     if FarmData then
         nuked = false
         fired = false
@@ -344,6 +377,9 @@ for j = startIndex, endIndex do
         if not nuked and bot:isInWorld() then
             dirtFarm(world)
             sleep(100)
+            -- Setelah selesai mengerjakan world
+            logCompletedWorld(world, doorFarm)
+            updateFarmList(farmList, world)
         end
     end
 end
